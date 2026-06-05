@@ -2,10 +2,16 @@
 
 Each entry is a curated, version-controlled public matter of record turned
 into a parametrized fixture asserting how payer-agent-audit's controls would
-have GOVERNED the scenario. Every fixture carries a primary-source URL and is
-``matters-of-record`` ONLY — no invented allegations or outcomes. Litigation
-entries assert the CONTROL behavior (the governance answer), never a verdict
-or a clinical judgment.
+have GOVERNED a hypothetical scenario. Every fixture carries a primary-source
+URL and is ``matters-of-record`` ONLY — it reports what a public court filing
+ALLEGES, with no invented allegations and no assertion of any verdict.
+
+Standing disclaimer for litigation entries: the inclusion of any matter is NOT
+a statement that any named defendant violated any law, and a ``control_answer``
+describes the control's behavior on a HYPOTHETICAL — it asserts nothing about
+the actual systems, facts, or outcome of the named matter. These entries assert
+the CONTROL behavior (the governance answer), never a verdict or a clinical
+judgment.
 
 This is data, not a test module (no ``test_`` prefix). It is consumed by
 ``test_golden_corpus.py``.

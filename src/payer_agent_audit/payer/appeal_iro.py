@@ -78,6 +78,11 @@ class AppealIROControl:
           * when external review is available for the funding type, the IRO
             pathway must be offered and the IRO conflict-free.
         Violations raise ``AppealRightsError`` and record a POLICY_VIOLATION.
+
+        Note: the IRO conflict-free check fires only once an IRO is actually
+        assigned (``iro_assigned=True``). Offering external review without
+        assigning an IRO at determination time is permitted — assignment
+        happens when the member requests external review.
         """
         obligation = obligations_for(funding_type, category)
 

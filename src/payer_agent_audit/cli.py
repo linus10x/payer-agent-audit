@@ -34,7 +34,7 @@ _PRIMITIVES = [
 
 def _cmd_info(_: argparse.Namespace) -> int:
     print(f"payer-agent-audit {__version__}")
-    print("NAIC umbrella · module (a) health-payer")
+    print("aligned to the NAIC Model Bulletin framework · module (a) health-payer")
     print("Five corrected-spec primitives:")
     for p in _PRIMITIVES:
         print(f"  - {p}")

@@ -63,13 +63,19 @@ class Attestation:
 
     def is_valid(self, *, agent_id: str, now: datetime | None = None) -> tuple[bool, str]:
         """Return ``(ok, reason)``. Rejects self-attestation, missing
-        evidence, stale timestamps, and a false/withheld claim."""
-        if not self.attester_id:
-            return False, f"{self.claim}: attester_id is empty (no independent attester)"
-        if self.attester_id == agent_id:
+        evidence, stale timestamps, and a false/withheld claim.
+
+        Identity comparison is normalized (strip + casefold) so a trivial
+        whitespace/case variation of the agent id cannot defeat the
+        self-attestation guard, and a blank-after-strip attester is rejected.
+        """
+        attester_norm = self.attester_id.strip().casefold()
+        if not attester_norm:
+            return False, f"{self.claim}: attester_id is empty/blank (no independent attester)"
+        if attester_norm == agent_id.strip().casefold():
             return False, (
                 f"{self.claim}: self-attestation rejected — attester_id "
-                f"{self.attester_id!r} equals the agent being promoted"
+                f"{self.attester_id!r} resolves to the agent being promoted"
             )
         if not self.evidence_ref:
             return False, f"{self.claim}: no evidence_ref supplied"

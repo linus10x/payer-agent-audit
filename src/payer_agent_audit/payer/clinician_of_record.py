@@ -5,11 +5,13 @@ must have a CLINICIAN OF RECORD — a licensed clinician who made or reviewed
 the determination. This control records and ENFORCES the presence of that
 attestation before an autonomous agent may emit a medical-necessity denial.
 
-This is the governance answer to the matters-of-record where algorithmic
-systems allegedly denied care without individual clinician review (e.g. the
-nH Predict and PxDx litigation). The control does NOT decide medical
-necessity — it refuses to let a denial that requires clinical judgment be
-issued without an attested, licensed human clinician on the record.
+This is the governance answer to publicly-reported matters in which
+algorithmic UM systems were alleged to have denied care without individual
+clinician review. The control does NOT decide medical necessity — it refuses
+to let a denial that requires clinical judgment be issued without an
+attested, licensed human clinician on the record. (Specific public dockets,
+framed as matters of record with no merit assertion, live only in the
+test golden corpus, not in this module.)
 
 Boundary. The clinician's medical judgment is the clinician's; this control
 governs the PRESENCE and ATTESTATION of that judgment, not its content.

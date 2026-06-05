@@ -38,3 +38,9 @@ repos:
         language: system
         pass_filenames: false
         types_or: [markdown, python]
+      - id: no-internal-notes-lint
+        name: no-internal-notes-lint
+        entry: python3 scripts/no_internal_notes_lint.py
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -12,7 +12,7 @@ abstract: >-
   Reference governance patterns, schemas, and runnable implementations for
   audit-ready autonomous AI agents in health-insurance / payer operations
   (utilization management, prior authorization, and claims/appeals support),
-  under the NAIC umbrella. Ships five primitives built to a corrected
+  aligned to the NAIC Model Bulletin framework. Ships five primitives built to a corrected
   specification — an autonomy-ladder level-gate requiring independent
   attestation, an un-self-clearable sovereign veto with a mandatory
   production-mode authorizer, a tamper-detecting hash-chain ledger

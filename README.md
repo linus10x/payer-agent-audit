@@ -2,7 +2,7 @@
 
 **Governance patterns for autonomous AI agents in health-insurance / payer operations.**
 
-Reference IP for adoption — documented, tested patterns for utilization management, prior authorization, and claims/appeals workflows, built under the NAIC umbrella. Extracted and generalized from a multi-year build of autonomous, governed agent systems. This is **not** a deployed control operating in production, and it **makes no medical-necessity or clinical determination** — a payer coverage decision is a benefit adjudication under insurance law, distinct from FDA medical-device regulation. See [LIMITATIONS.md](LIMITATIONS.md).
+Reference IP for adoption — documented, tested patterns for utilization management, prior authorization, and claims/appeals workflows, aligned to the NAIC Model Bulletin framework. Informed by independent research into autonomous, governed agent systems. This is **not** a deployed control operating in production, and it **makes no medical-necessity or clinical determination** — a payer coverage decision is a benefit adjudication under insurance law, distinct from FDA medical-device regulation. See [LIMITATIONS.md](LIMITATIONS.md).
 
 ![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)
 ![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
@@ -30,7 +30,7 @@ Reference IP for adoption — documented, tested patterns for utilization manage
 
 ## Why this exists
 
-Payers are putting autonomous and AI-assisted systems into utilization management, prior authorization, and claims adjudication support. The public matters of record — the nH Predict and PxDx dockets — turn on the same question a regulator and a plaintiff both ask: *can you show, on the record, that a denial which turned on medical judgment had a licensed clinician of record, that the decision was timely under the rule that governs this plan, and that appeal rights were afforded?*
+Payers are putting autonomous and AI-assisted systems into utilization management, prior authorization, and claims adjudication support. The publicly-reported algorithmic-UM disputes turn on the same question a regulator and a plaintiff both ask: *can you show, on the record, that a denial which turned on medical judgment had a licensed clinician of record, that the decision was timely under the rule that governs this plan, and that appeal rights were afforded?*
 
 This framework is the recordkeeping and process-gating answer to that question. It does not decide medical necessity. It refuses to let an autonomous agent issue a medical-judgment denial without an attested clinician of record, checks decision timeliness against the rule that the plan's funding type actually imposes, and writes every check to a hash-chained ledger. These are tested reference patterns — not academic proposals, and not a turnkey product.
 
@@ -133,8 +133,12 @@ The suite includes unit + contract tests, property-based tests (thousands of gen
 
 Health-plan model-risk, compliance, and engineering teams putting autonomy into UM/PA/claims workflows who need an auditable, regulator-legible governance substrate they can adapt — and the diligence teams who have to assess one.
 
+## Author & disclosures
+
+Authored by Kunjar Bhaduri through North Texas Capital Investments, an independent research effort. This is independent research; it is not produced on behalf of, and does not represent the views of, any employer or client, and contains no employer- or client-confidential material. The regulatory content is reference mapping, not legal advice — see [DISCLAIMER.md](DISCLAIMER.md).
+
 ## License · Citation
 
-Dual-licensed **MIT OR Apache-2.0**. If you use this framework in research or production, please cite it — see [CITATION.cff](CITATION.cff).
+Dual-licensed **MIT OR Apache-2.0**. If you use this framework in research or production, please cite it — see [CITATION.cff](CITATION.cff). Trademark posture: [docs/TRADEMARK.md](docs/TRADEMARK.md).
 
 *Patterns are software, not legal advice.*

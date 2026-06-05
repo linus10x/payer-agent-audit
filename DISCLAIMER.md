@@ -25,6 +25,14 @@ Adopting this framework does not transfer, reduce, or satisfy any obligation an 
 
 The regulatory mappings in this repository are **reference mappings** to help an adopter point qualified counsel at relevant clauses. They are not legal opinions and not a representation that any control satisfies any rule.
 
+## PHI / HIPAA handling is the deployer's responsibility
+
+The audit chain records whatever payload a deployer passes to it. In a real deployment those payloads may contain protected health information or personally identifiable information (for example a case reference, a clinician's name, license number, or NPI). **The deployer is solely responsible for HIPAA-compliant handling of anything written to the ledger** — including the business-associate-agreement chain, encryption at rest and in transit, minimum-necessary scoping, access controls, and retention. Nothing in this framework should be read to permit, and the author does not recommend, writing PHI into an audit payload without the deployer's own privacy-and-security controls. Scope payloads to non-PHI identifiers and references wherever possible.
+
+## No reliance; no attorney-client relationship
+
+No deployer should treat any hardcoded timeframe, statutory citation, or `verified` flag in this repository as a substitute for independent verification by qualified counsel. The author assumes no liability for any reliance on any value, mapping, or statement herein. Nothing in this repository creates an attorney-client relationship or constitutes an engagement of the author for legal or compliance services.
+
 ## No clinical, engineering, or legal advice
 
 - This framework is **not clinical advice** and makes no medical-necessity or clinical determination. It is not a medical device and is not FDA-cleared.

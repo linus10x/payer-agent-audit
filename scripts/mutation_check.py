@@ -82,8 +82,8 @@ MUTATIONS: list[Mutation] = [
     ),
     Mutation(
         "payer_agent_audit/governance/autonomy_ladder.py",
-        "if self.attester_id == agent_id:",
-        "if self.attester_id != agent_id:",
+        "if attester_norm == agent_id.strip().casefold():",
+        "if attester_norm != agent_id.strip().casefold():",
         "ladder self-attestation guard inverted",
     ),
     Mutation(

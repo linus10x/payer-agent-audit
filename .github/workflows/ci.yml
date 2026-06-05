@@ -51,6 +51,7 @@ jobs:
         run: |
           python3 scripts/banned_term_lint.py
           python3 scripts/tamper_language_lint.py
+          python3 scripts/no_internal_notes_lint.py
       - name: Upload coverage
         if: matrix.python-version == '3.12'
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08  # v4.6.0

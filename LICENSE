@@ -1,0 +1,19 @@
+payer-agent-audit is dual-licensed under either of:
+
+    * Apache License, Version 2.0   (see LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
+    * MIT license                   (see LICENSE-MIT   or http://opensource.org/licenses/MIT)
+
+at your option.
+
+SPDX-License-Identifier: MIT OR Apache-2.0
+
+Dual-licensing preserves the MIT downstream-citation graph used by the sibling
+Autonomy Ladder libraries while supplying the express patent grant (Apache 2.0
+§3) that Tier-1 regulated-industry legal review typically requires before
+authorizing inbound supply-chain inclusion. Adopters elect at integration time;
+election does not require notice to the maintainer.
+
+For the trademark posture (governed separately from this code license per
+Apache 2.0 §6 and standard MIT practice), see docs/TRADEMARK.md.
+
+For contribution license terms, see LICENSING.md.

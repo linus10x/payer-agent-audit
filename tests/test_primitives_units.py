@@ -526,3 +526,43 @@ def test_promotion_gate_one_day_under_minimum_fails():
     )
     report = check_a2_to_a3_promotion(ev, agent_id="agent")
     assert report.passed is False
+
+
+# --------------------------------------------------------------------------- #
+# Guard normalization (whitespace/case self-attestation + self-clear bypass)   #
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize("attester", [" agent ", "AGENT", "Agent ", "  agent", "\tagent\n"])
+def test_attestation_self_attestation_normalized_rejected(attester):
+    """A whitespace/case variant of the agent id must still be rejected as
+    self-attestation."""
+    a = Attestation("c", attester, datetime.now(UTC).isoformat(), "ref")
+    ok, reason = a.is_valid(agent_id="agent")
+    assert not ok and "self-attestation rejected" in reason
+
+
+def test_attestation_blank_attester_rejected():
+    a = Attestation("c", "   ", datetime.now(UTC).isoformat(), "ref")
+    ok, reason = a.is_valid(agent_id="agent")
+    assert not ok and "blank" in reason
+
+
+@pytest.mark.parametrize("op", [" claims-agent ", "CLAIMS-AGENT", "Claims-Agent"])
+def test_veto_self_clear_normalized_rejected(op):
+    from payer_agent_audit.governance.sovereign_veto import VetoBlockedError
+
+    v = SovereignVeto("claims-agent", authorizer=_allow(), production=True)
+    v.trigger(VetoReason.COMPLIANCE_FLAG, "officer", "flag")
+    with pytest.raises(VetoBlockedError, match="self-clearing forbidden"):
+        v.clear(operator_id=op, reason="resume")
+    assert v.is_vetoed
+
+
+def test_veto_blank_operator_rejected():
+    from payer_agent_audit.governance.sovereign_veto import VetoBlockedError
+
+    v = SovereignVeto("claims-agent", authorizer=_allow(), production=True)
+    v.trigger(VetoReason.COMPLIANCE_FLAG, "officer", "flag")
+    with pytest.raises(VetoBlockedError, match="empty/blank"):
+        v.clear(operator_id="  ", reason="resume")

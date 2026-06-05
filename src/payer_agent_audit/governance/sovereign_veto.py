@@ -198,16 +198,24 @@ class SovereignVeto:
         Order of checks (all must pass):
           1. ``operator_id != agent_id`` — an agent cannot clear its own
              veto. Enforced UNCONDITIONALLY, even with a permissive
-             Authorizer, because self-clear defeats the entire control.
+             Authorizer, because self-clear defeats the entire control. The
+             comparison is normalized (strip + casefold) so a whitespace/case
+             variation of the agent id cannot bypass it, and a blank operator
+             is rejected.
           2. The Authorizer (mandatory in production) must vouch for
              ``operator_id`` as an authenticated principal authorized to
              clear. In advisory mode (no authorizer) this step is skipped
              and the operator string is recorded unauthenticated.
         """
-        # 1. Self-clear is forbidden unconditionally.
-        if operator_id == self.agent_id:
+        # 1. Self-clear is forbidden unconditionally (normalized comparison).
+        operator_norm = operator_id.strip().casefold()
+        if not operator_norm:
             raise VetoBlockedError(
-                f"self-clearing forbidden: operator_id {operator_id!r} equals the "
+                "operator_id is empty/blank; a veto must be cleared by a named operator"
+            )
+        if operator_norm == self.agent_id.strip().casefold():
+            raise VetoBlockedError(
+                f"self-clearing forbidden: operator_id {operator_id!r} resolves to the "
                 f"vetoed agent_id. A sovereign veto must be cleared by a human "
                 f"operator distinct from the agent."
             )

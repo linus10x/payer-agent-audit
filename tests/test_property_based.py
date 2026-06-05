@@ -142,9 +142,15 @@ def test_prop_level_gate_tenure_monotonic(ledger_days, shadow_days):
 
 
 @_SETTINGS
-@given(attester=st.text(min_size=1, max_size=16))
-def test_prop_level_gate_rejects_self_attestation(attester):
-    # When the attester IS the agent, the gate must fail regardless of tenure.
+@given(
+    agent=st.text(min_size=1, max_size=16).filter(lambda s: s.strip() != ""),
+    pad=st.sampled_from(["", " ", "  ", "\t"]),
+    upper=st.booleans(),
+)
+def test_prop_level_gate_rejects_self_attestation(agent, pad, upper):
+    # A whitespace/case VARIANT of the agent id must still be caught as
+    # self-attestation — not just the exact string (the normalization guard).
+    attester = f"{pad}{agent.upper() if upper else agent}{pad}"
     ev = PromotionEvidence(
         sovereign_veto_load_tested=_att(attester=attester),
         audit_ledger_running_for=timedelta(days=120),
@@ -153,7 +159,7 @@ def test_prop_level_gate_rejects_self_attestation(attester):
         shadow_mode_attestation=_att(attester=attester),
         circuit_breaker_test_recent=_att(attester=attester),
     )
-    report = check_a2_to_a3_promotion(ev, agent_id=attester)
+    report = check_a2_to_a3_promotion(ev, agent_id=agent)
     assert report.passed is False
 
 

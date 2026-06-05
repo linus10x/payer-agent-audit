@@ -1,6 +1,6 @@
 # Assurance Catalog — payer-agent-audit v0.1.0
 
-*MECE assurance catalog (JPMC-audit §4 protocol), scoped to this library. Each
+*MECE assurance catalog (Tier-1 financial-institution audit protocol), scoped to this library. Each
 row is labeled **implemented-control** (a tested control exists), **documented-
 pattern** (a reference pattern, not an enforced control), or **deployer-owned**
 (across the trust boundary). Real frameworks only; conditional rows marked.*
@@ -58,6 +58,19 @@ The adversarial pass (2026-06-05) surfaced these; all remediated and re-verified
    → `attest_denial(..., require_specialty_match=True)` enforces it where a state
    requires it.
 5. **Dead code** — `_RejectAllAuthorizer` (unused, broken docstring) removed.
+
+A second, deeper adversarial + counsel pass (2026-06-05) added:
+
+6. **Audit-chain claim honesty** — a genesis docstring implied forgery resistance the
+   design does not have (`deployer_id` is an in-band routing label, not a secret key).
+   → Rewritten: deployer-keyed genesis is domain separation, NOT forgery resistance;
+   end-to-end regeneration is detectable only via the external witness anchor.
+7. **Guard normalization** — the P1 self-attestation and P2 self-clear identity guards
+   were exact-string only (a whitespace/case variant of the agent id bypassed them).
+   → Normalized (strip + casefold), blank rejected, regression + property tests added.
+8. **Regulatory precision** — MA external review corrected to the IRE (not QIC); CHIP
+   citation chain noted (42 CFR 457.1230 → 438.210); FDA-SaMD boundary reframed from a
+   categorical legal conclusion to a counsel-directed observation.
 
 ## D. Honesty discipline
 

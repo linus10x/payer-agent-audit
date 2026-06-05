@@ -140,8 +140,9 @@ _MEDICAID_TIMEFRAMES = {
         "(7 calendar days on/after 2026-01-01; 14 days before, as amended by CMS-0057-F)",
         citation_url=_MEDICAID_438_210_URL,
         verified=True,
-        note="14 calendar days for rating periods beginning before 2026-01-01; "
-        "7 on/after. Up to 14-day extension permitted under (d)(1)(ii).",
+        note="Deadline reflects the CURRENT standard (rating periods on/after "
+        "2026-01-01 = 7 calendar days). The pre-2026 value was 14 days; the library "
+        "models only the current standard. Up to 14-day extension under (d)(1)(ii).",
     ),
     RequestCategory.POSTSERVICE: TimelinessObligation(
         deadline=None,
@@ -205,26 +206,35 @@ def obligations_for(funding_type: FundingType, category: RequestCategory) -> Obl
             category=category,
             timeliness=timeliness,
             requires_clinician_of_record_on_denial=True,
-            appeal_regime="Medicare Advantage organization-determination appeals (42 CFR Part 422)",
+            appeal_regime="Medicare Advantage organization-determination appeals "
+            "(42 CFR Part 422 Subpart M)",
             external_review_available=True,
-            external_review_citation="MA independent/external review (QIC / IRE)",
+            external_review_citation="MA reconsideration by the independent review entity (IRE)",
             primary_regulator="CMS",
             citations=(timeliness.citation, _CMS_0057_URL),
         )
     if funding_type in (FundingType.MEDICAID_MANAGED_CARE, FundingType.CHIP):
         # Medicaid / CHIP managed-care timeframes: 42 CFR 438.210(d) — a DISTINCT
         # authority from MA (CMS-0057-F amended 438.210's standard timeframe).
+        # CHIP managed care reaches Part 438 (incl. 438.210) by cross-reference
+        # from 42 CFR 457.1230, rather than 438.210 applying to CHIP directly.
         timeliness = _MEDICAID_TIMEFRAMES[category]
+        chip_note = (
+            (_MEDICAID_438_210_URL, "CHIP via 42 CFR 457.1230 cross-reference")
+            if funding_type == FundingType.CHIP
+            else (_MEDICAID_438_210_URL,)
+        )
         return ObligationSet(
             funding_type=funding_type,
             category=category,
             timeliness=timeliness,
             requires_clinician_of_record_on_denial=True,
-            appeal_regime="Medicaid managed-care grievance & appeals (42 CFR 438.400 et seq.)",
+            appeal_regime="Medicaid managed-care grievance & appeals (42 CFR 438.400 et seq.; "
+            "CHIP via 42 CFR 457.1230)",
             external_review_available=True,
             external_review_citation="State fair hearing / external review",
             primary_regulator="CMS + State Medicaid agency",
-            citations=(timeliness.citation, _MEDICAID_438_210_URL),
+            citations=(timeliness.citation, *chip_note),
         )
     if funding_type == FundingType.SELF_FUNDED_ERISA:
         timeliness = _ERISA_TIMEFRAMES[category]

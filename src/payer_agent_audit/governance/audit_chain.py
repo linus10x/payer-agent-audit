@@ -85,13 +85,23 @@ GENESIS_VERSION = "v1"
 
 
 def _compute_genesis_hash(deployer_id: str, chain_creation_iso: str) -> str:
-    """Deployer-keyed seed for the genesis event's ``prev_hash``.
+    """Domain-separated seed for the genesis event's ``prev_hash``.
 
     Seed = ``SHA-256(domain_separator/deployer_id/chain_creation_iso)``.
-    Two chains with different ``deployer_id`` (or ``chain_creation_iso``)
-    produce different seeds — an attacker without the deployer's identity
-    cannot regenerate a chain from scratch and match an existing
-    deployer's head.
+
+    **This is domain separation, NOT forgery resistance.** ``deployer_id``
+    is a routing label, NOT a secret key — it is written in cleartext into
+    the genesis event payload on disk. An attacker with write access to the
+    storage layer (the same access the threat model in LIMITATIONS.md
+    already grants) can read ``deployer_id`` and ``chain_creation_iso`` off
+    event #0, recompute this seed, and regenerate a fully-forged chain that
+    ``verify()`` returns True on. The deployer-keyed genesis therefore adds
+    NO forgery resistance against an attacker with disk access; it only (a)
+    distinguishes one deployer's chain from another's and (b) makes in-place
+    tampering with the genesis fields detectable (the payload is folded into
+    the genesis event's own ``event_hash``). End-to-end regeneration is
+    detectable ONLY via the external witness anchor (see the module
+    docstring, ``witness_anchor.py``, and production mode).
     """
     payload = f"{GENESIS_DOMAIN_SEPARATOR}/{deployer_id}/{chain_creation_iso}".encode()
     return hashlib.sha256(payload).hexdigest()

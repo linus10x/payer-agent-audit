@@ -1,4 +1,4 @@
-"""AL-PROBES — the five primitive adversarial probes (JPMC-audit §4).
+"""AL-PROBES — the five primitive adversarial probes (Tier-1 audit protocol).
 
 Each probe re-authors the catalog's exact failing construction as a
 committed, reproducible test, and asserts that payer-agent-audit's

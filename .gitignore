@@ -39,3 +39,7 @@ output/
 docs/*.pdf
 docs/*.pptx
 docs/*.key
+
+# Internal build/research notes — never publish (counsel-pending flags, working notes)
+docs/*_internal.md
+*_internal.md
