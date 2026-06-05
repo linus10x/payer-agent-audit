@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use this framework, please cite it as below."
+type: software
+title: "payer-agent-audit: Governance patterns for autonomous AI agents in health-insurance / payer operations"
+authors:
+  - family-names: Bhaduri
+    given-names: Kunjar
+    affiliation: North Texas Capital Investments
+repository-code: "https://github.com/linus10x/payer-agent-audit"
+url: "https://github.com/linus10x/payer-agent-audit"
+abstract: >-
+  Reference governance patterns, schemas, and runnable implementations for
+  audit-ready autonomous AI agents in health-insurance / payer operations
+  (utilization management, prior authorization, and claims/appeals support),
+  under the NAIC umbrella. Ships five primitives built to a corrected
+  specification — an autonomy-ladder level-gate requiring independent
+  attestation, an un-self-clearable sovereign veto with a mandatory
+  production-mode authorizer, a tamper-detecting hash-chain ledger
+  (within-trust-boundary) whose verifier branches the genesis seed and whose
+  production mode requires an external witness anchor, a DEFCON state machine
+  with a transition-direction guard, and an effective-challenge harness that
+  enforces challenger-not-equal-primary and records an operator independence
+  attestation. Module (a) health-payer adds funding-type-aware obligation
+  routing (CMS vs ERISA vs state DOI vs ACA) and three controls: UM timeliness,
+  clinician-of-record-on-denial, and appeal/IRO pathway. The framework makes no
+  medical-necessity or clinical determination — a payer coverage decision is a
+  benefit adjudication under insurance law, distinct from FDA medical-device
+  regulation. Maps to reference regulatory anchors including the NAIC Model
+  Bulletin on insurer use of AI, CMS-0057-F, ERISA 29 CFR 2560.503-1, and ACA
+  45 CFR 147.136. Zero runtime dependencies.
+keywords:
+  - ai-governance
+  - autonomous-agents
+  - health-insurance
+  - payer
+  - utilization-management
+  - prior-authorization
+  - naic
+  - erisa
+  - cms
+  - audit-trail
+license: "MIT OR Apache-2.0"
+version: "0.1.0"
+date-released: "2026-06-05"
+# DOI note: a Zenodo concept DOI is minted on first GitHub Release; each
+# tagged release mints a version DOI. The concept DOI (resolving to the
+# latest version) is the citeable handle. Populate `doi:` after the first
+# release per DOI-PLAN.md. Owner gate — not yet released.

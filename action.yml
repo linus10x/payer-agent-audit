@@ -1,0 +1,36 @@
+name: "payer-agent-audit chain verify"
+description: "Verify a payer-agent-audit JSONL audit chain in CI (tamper detection within trust boundary)."
+author: "Kunjar Bhaduri"
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  audit-jsonl-path:
+    description: "Path to the JSONL audit chain to verify."
+    required: true
+  python-version:
+    description: "Python version to run the verifier under."
+    required: false
+    default: "3.12"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install payer-agent-audit
+      shell: bash
+      run: |
+        if [ -f "${{ github.action_path }}/pyproject.toml" ]; then
+          pip install "${{ github.action_path }}"
+        else
+          pip install payer-agent-audit
+        fi
+    - name: Verify chain
+      shell: bash
+      run: payer-audit verify --jsonl "${{ inputs.audit-jsonl-path }}"
+    - name: Info
+      shell: bash
+      run: payer-audit info

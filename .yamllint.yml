@@ -1,0 +1,16 @@
+extends: default
+
+rules:
+  line-length:
+    max: 200
+  truthy: disable
+  document-start: disable
+  comments:
+    min-spaces-from-content: 1
+
+ignore: |
+  .venv/
+  build/
+  dist/
+  htmlcov/
+  vendor-clauses/

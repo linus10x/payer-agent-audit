@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev,test-property]"
+      - name: Ruff lint
+        run: ruff check .
+      - name: Ruff format check
+        run: ruff format --check .
+      - name: mypy --strict
+        run: mypy --strict src/payer_agent_audit/ --ignore-missing-imports
+      - name: Tests + coverage
+        # PYTHONDONTWRITEBYTECODE guards against a stale-.pyc divergence in a
+        # clean checkout (a diligence reviewer's first `git clone && pytest`).
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          pytest tests/ -v \
+            --cov=src/payer_agent_audit \
+            --cov=examples \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            --cov-fail-under=90
+      - name: Prose lints
+        run: |
+          python3 scripts/banned_term_lint.py
+          python3 scripts/tamper_language_lint.py
+      - name: Upload coverage
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08  # v4.6.0
+        with:
+          name: coverage
+          path: coverage.xml
+          retention-days: 30

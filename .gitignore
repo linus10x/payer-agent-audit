@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.egg
+
+# Virtualenv
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.mutmut-cache
+
+# Opt-in lint input — per-env, never committed
+.banned-names.txt
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Scratch
+output/
+
+# Sales / pitch artifacts — OSS repo does not host decks
+docs/*.pdf
+docs/*.pptx
+docs/*.key
