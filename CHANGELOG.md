@@ -28,12 +28,22 @@ Initial release. Module (a) health-payer, under the NAIC umbrella.
   routing (CMS / ERISA / state DOI / ACA), UM-timeliness check,
   clinician-of-record-on-denial enforcement, appeal/IRO pathway control.
 - **CLI** (`payer-audit`): `info`, `verify`, `obligations`.
+- **Identity-guard hardening**: a shared NFKC + zero-width normalizer
+  (`_normalize.py`) so the self-attestation (P1), self-clear (P2), and ERISA
+  reviewer-independence guards cannot be defeated by Unicode-confusable or
+  zero-width disguises of an id.
+- **PEP 561**: ships a `py.typed` marker so adopters consume the strict types.
+- **Audit-chain participation**: DEFCON transitions and the promotion gate now
+  optionally emit to the audit chain, so every governance primitive can be
+  ledgered.
 - **Tests**: unit + contract, property-based (thousands of generated cases),
   golden corpus of public matters of record (primary-source URLs), the five
   AL-PROBES under `tests/adversarial/`, a payer-not-FDA-SaMD boundary scan, and
-  a mutation pass (`scripts/mutation_check.py`). Coverage ≥90%.
-- **Docs**: README, LIMITATIONS (payer-not-FDA-SaMD boundary), DISCLAIMER,
-  FAILURE-MODES, NEGATIVE-USE-CASES, CITATION.cff, DOI-PLAN.
+  a mutation pass (`scripts/mutation_check.py`). **100% line coverage, 100%
+  mutation kill** (gate floor ≥90%).
+- **Docs**: README, ARCHITECTURE (trust-boundary diagram), LIMITATIONS
+  (payer-not-FDA-SaMD boundary), DISCLAIMER, FAILURE-MODES, NEGATIVE-USE-CASES,
+  ASSURANCE-CATALOG, NOTICE, LICENSE, LICENSING, TRADEMARK, CITATION.cff, DOI-PLAN.
 
 ### Notes
 

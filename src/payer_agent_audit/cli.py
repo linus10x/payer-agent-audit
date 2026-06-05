@@ -61,12 +61,10 @@ def _cmd_verify(args: argparse.Namespace) -> int:
 
 
 def _cmd_obligations(args: argparse.Namespace) -> int:
-    try:
-        funding = FundingType(args.funding)
-        category = RequestCategory(args.category)
-    except ValueError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 2
+    # argparse `choices=` (build_parser) already restricts --funding/--category
+    # to valid enum values, so these conversions cannot raise here.
+    funding = FundingType(args.funding)
+    category = RequestCategory(args.category)
     ob = obligations_for(funding, category)
     print(f"funding_type        : {ob.funding_type.value}")
     print(f"category            : {ob.category.value}")

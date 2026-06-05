@@ -82,8 +82,8 @@ MUTATIONS: list[Mutation] = [
     ),
     Mutation(
         "payer_agent_audit/governance/autonomy_ladder.py",
-        "if attester_norm == agent_id.strip().casefold():",
-        "if attester_norm != agent_id.strip().casefold():",
+        "if attester_norm == normalize_principal_id(agent_id):",
+        "if attester_norm != normalize_principal_id(agent_id):",
         "ladder self-attestation guard inverted",
     ),
     Mutation(
@@ -118,6 +118,22 @@ MUTATIONS: list[Mutation] = [
         "deadline is None or deployer_deadline < deadline",
         "deadline is None or deployer_deadline > deadline",
         "um deployer-tighten-only guard inverted",
+    ),
+    # NB: the deployer-tighten `< vs <=` boundary is an EQUIVALENT mutant — at
+    # equality the resulting deadline value and `verified` flag are identical
+    # either way, so it is intentionally not included (equivalent mutants are
+    # excluded from mutation scoring by definition).
+    Mutation(
+        "payer_agent_audit/payer/um_timeliness.py",
+        "if decision_made_at < request_received_at:",
+        "if decision_made_at <= request_received_at:",
+        "um decision-before-request boundary (< vs <=)",
+    ),
+    Mutation(
+        "payer_agent_audit/payer/appeal_iro.py",
+        "elif pathway.iro_assigned and not pathway.iro_conflict_free:",
+        "elif not pathway.iro_conflict_free:",
+        "appeal IRO-conflict guard drops iro_assigned condition",
     ),
 ]
 
@@ -177,7 +193,14 @@ def main() -> int:
                     "not slow",
                 ],
                 cwd=REPO_ROOT,
-                env={"PYTHONPATH": str(SRC), "PATH": "/usr/bin:/bin"},
+                # PYTHONDONTWRITEBYTECODE is essential: without it, rapid
+                # mutate/revert cycles can hit a stale .pyc (coarse mtime
+                # resolution) and report a real mutant as a false survivor.
+                env={
+                    "PYTHONPATH": str(SRC),
+                    "PATH": "/usr/bin:/bin",
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                },
                 capture_output=True,
                 text=True,
             )

@@ -77,9 +77,10 @@ GOLDEN_LITIGATION: list[GoldenCase] = [
         extra={
             "funding_type": "fully_insured",
             "control_answer": (
-                "The clinician-of-record control requires an attested review "
-                "(reviewed=True) per medical-necessity denial — a name attached "
-                "without an attested review is rejected."
+                "On a hypothetical medical-necessity denial, the clinician-of-record "
+                "control requires an attested review (reviewed=True) — a name attached "
+                "without an attested review is rejected. This describes the control's "
+                "behavior on a hypothetical and asserts nothing about the named matter."
             ),
         },
     ),

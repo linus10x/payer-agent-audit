@@ -1,14 +1,15 @@
 # payer-agent-audit
 
-**Governance patterns for autonomous AI agents in health-insurance / payer operations.**
+**The governance library that documents what it does *not* do — in code-enforced detail.** Detection, not prevention. Recordkeeping, not medical-necessity. Reference IP, not a deployed control. Most governance tooling oversells; this one ships its own failure matrix and an adversarial probe per primitive.
 
-Reference IP for adoption — documented, tested patterns for utilization management, prior authorization, and claims/appeals workflows, aligned to the NAIC Model Bulletin framework. Informed by independent research into autonomous, governed agent systems. This is **not** a deployed control operating in production, and it **makes no medical-necessity or clinical determination** — a payer coverage decision is a benefit adjudication under insurance law, distinct from FDA medical-device regulation. See [LIMITATIONS.md](LIMITATIONS.md).
+Governance patterns for autonomous AI agents in health-insurance / payer operations — utilization management, prior authorization, and claims/appeals — aligned to the NAIC Model Bulletin framework. This is **not** a deployed control operating in production, and it **makes no medical-necessity or clinical determination**: a payer coverage decision is a benefit adjudication under insurance law, distinct from FDA medical-device regulation. See [LIMITATIONS.md](LIMITATIONS.md).
 
 ![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)
 ![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
 ![mypy: strict](https://img.shields.io/badge/mypy-strict-blue)
 ![ruff](https://img.shields.io/badge/lint-ruff-orange)
-![coverage ≥90%](https://img.shields.io/badge/coverage-%E2%89%A590%25-brightgreen)
+![coverage 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)
+![mutation 100%](https://img.shields.io/badge/mutation-100%25-brightgreen)
 ![Zero runtime deps](https://img.shields.io/badge/runtime%20deps-0-lightgrey)
 
 ---
@@ -18,19 +19,24 @@ Reference IP for adoption — documented, tested patterns for utilization manage
 - [Why this exists](#why-this-exists)
 - [Quick start](#quick-start)
 - [The five primitives](#the-five-primitives)
-- [Module (a): health-payer controls](#module-a-health-payer-controls)
+- [Module (a) — health-payer controls](#module-a--health-payer-controls)
 - [Funding-type obligation routing](#funding-type-obligation-routing)
+- [Threat model at a glance](#threat-model-at-a-glance)
 - [Regulatory mapping](#regulatory-mapping)
 - [What this is and is not](#what-this-is-and-is-not)
 - [Testing](#testing)
 - [Who this is for](#who-this-is-for)
+- [Architecture](#architecture)
+- [Author & disclosures](#author--disclosures)
 - [License · Citation](#license--citation)
 
 ---
 
 ## Why this exists
 
-Payers are putting autonomous and AI-assisted systems into utilization management, prior authorization, and claims adjudication support. The publicly-reported algorithmic-UM disputes turn on the same question a regulator and a plaintiff both ask: *can you show, on the record, that a denial which turned on medical judgment had a licensed clinician of record, that the decision was timely under the rule that governs this plan, and that appeal rights were afforded?*
+Payers are putting autonomous and AI-assisted systems into utilization management, prior authorization, and claims adjudication support. The algorithmic-UM disputes now in litigation and on regulators' desks turn on the same question a regulator and a plaintiff both ask: *can you show, on the record, that a denial which turned on medical judgment had a licensed clinician of record, that the decision was timely under the rule that governs this plan, and that appeal rights were afforded?*
+
+Where governance tooling typically ships a dashboard and a compliance checkbox, this ships a hash-chained evidence ledger, an adversarial probe per primitive, and a written list of the things it deliberately does not do.
 
 This framework is the recordkeeping and process-gating answer to that question. It does not decide medical necessity. It refuses to let an autonomous agent issue a medical-judgment denial without an attested clinician of record, checks decision timeliness against the rule that the plan's funding type actually imposes, and writes every check to a hash-chained ledger. These are tested reference patterns — not academic proposals, and not a turnkey product.
 
@@ -64,9 +70,11 @@ assert result.met is False                                  # breach, recorded t
 assert chain.verify()
 ```
 
+Runnable end-to-end: [`examples/quickstart_um_timeliness.py`](examples/quickstart_um_timeliness.py) — `python examples/quickstart_um_timeliness.py`.
+
 ## The five primitives
 
-Built fresh to a corrected specification (they do not inherit known defects of earlier sibling libraries):
+Built fresh to a corrected specification — each primitive ships with an adversarial probe (`tests/adversarial/`) that re-authors the exact failure mode an earlier-generation library admitted, and asserts this one refuses it. The defects are not described; they are tested against.
 
 | Primitive | Module | What it does |
 |---|---|---|
@@ -76,7 +84,7 @@ Built fresh to a corrected specification (they do not inherit known defects of e
 | **DEFCON state machine** | `governance/defcon.py` | Graduated autonomy throttle; immediate escalation, hardened de-escalation — a **transition-direction guard** forbids a one-call `HALT`/`SHUTDOWN → NORMAL`. |
 | **Effective-challenge harness** | `governance/effective_challenge_harness.py` | Independent model challenge; **enforces challenger ≠ primary** (a model cannot self-challenge to a clean accept); records an operator **independence attestation** to the chain. |
 
-## Module (a): health-payer controls
+## Module (a) — health-payer controls
 
 | Control | Module | Governs |
 |---|---|---|
@@ -100,12 +108,24 @@ The same denial carries different obligations depending on who funds the plan. T
 
 A deployer may **tighten** a verified deadline (a stricter internal SLA), never loosen one past the regulatory floor.
 
+## Threat model at a glance
+
+| Threat | In-boundary? | What stops it |
+|---|---|---|
+| Ledger edited after write | ✅ shipped control | Recompute-on-load + `verify_strict` |
+| Agent clears its own veto (incl. case / Unicode-confusable disguise) | ✅ shipped control | Unconditional, normalized self-clear guard |
+| One-call `HALT`/`SHUTDOWN → NORMAL` | ✅ shipped control | Transition-direction guard (stepwise + re-authorized) |
+| Whole chain regenerated by an attacker with write access | ❌ across boundary | **Only** an external witness anchor — your wiring |
+| Operator falsely attests an independent challenger | ❌ across boundary | Second-line model-risk review — your process |
+
+Shipped-and-tested controls draw the trust boundary; the across-boundary rows are handed back to the deployer, explicitly, by design. Full 8-row matrix with regulatory mappings: [FAILURE-MODES.md](FAILURE-MODES.md).
+
 ## Regulatory mapping
 
 Reference mappings to help a deployer point qualified counsel at relevant clauses; applicability is a deployer-and-counsel determination. Primary sources, with a `verified` flag in code:
 
 - **NAIC Model Bulletin: Use of AI Systems by Insurers** (adopted 2023-12-04; at least 24 states adopted, per the reg source verified 2026-06-03)
-- **CMS-0057-F** Interoperability and Prior Authorization Final Rule (89 FR 8758, 2024-02-08; decision timeframes effective 2026-01-01)
+- **CMS-0057-F** Interoperability and Prior Authorization Final Rule (89 FR 8758, 2024-02-08; RIN 0938-AU87; decision timeframes effective 2026-01-01)
 - **Medicaid / CHIP managed care** 42 CFR 438.210(d) (service-authorization timeframes; standard tightened to 7 days on/after 2026-01-01 by CMS-0057-F)
 - **ERISA claims-procedure** 29 CFR 2560.503-1 (DOL EBSA)
 - **ACA internal/external review** 45 CFR 147.136 (IRO pathway)
@@ -117,7 +137,7 @@ Reference mappings to help a deployer point qualified counsel at relevant clause
 - It **is not** a deployed control, a medical device, FDA-cleared software, legal advice, or a guarantee of any regulatory outcome.
 - It **makes no medical-necessity or clinical determination.** The clinician's judgment belongs to the clinician; this framework governs whether that judgment is present, attested, timely, and appealable.
 
-The combination is the framework. The deployer's substrate is the production deployment.
+The framework is the governed pattern; the production deployment is the deployer's substrate underneath it. This repo gives you the first and refuses to pretend it gives you the second.
 
 ## Testing
 
@@ -127,11 +147,17 @@ pytest --cov=src/payer_agent_audit --cov-fail-under=90      # unit + property + 
 python3 scripts/mutation_check.py                            # mutation pass (kill score)
 ```
 
-The suite includes unit + contract tests, property-based tests (thousands of generated cases per primitive), a golden corpus of public matters of record (each with a primary-source URL), the five AL-PROBES under `tests/adversarial/`, and a payer-not-FDA-SaMD boundary scan.
+The suite includes unit + contract tests, property-based tests (thousands of generated cases per primitive), a golden corpus of public matters of record (each with a primary-source URL), the five AL-PROBES under `tests/adversarial/`, and a payer-not-FDA-SaMD boundary scan. The gate is **≥90%**; the suite currently runs at **100% line coverage with a 100% mutation kill** — coverage is a floor, not a finish line (see [docs/ASSURANCE-CATALOG.md](docs/ASSURANCE-CATALOG.md)).
 
 ## Who this is for
 
-Health-plan model-risk, compliance, and engineering teams putting autonomy into UM/PA/claims workflows who need an auditable, regulator-legible governance substrate they can adapt — and the diligence teams who have to assess one.
+Health-plan model-risk, compliance, and engineering teams putting autonomy into UM/PA/claims workflows who need an auditable governance substrate a regulator can read and they can adapt — and the diligence teams who have to assess one.
+
+**Not for you if** you want a turnkey UM engine, a medical-necessity classifier, or a control you can deploy without wiring your own identity provider, durable store, and external witness. This is a substrate to adapt, not a product to install.
+
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the trust-boundary diagram — the five primitives and three controls inside the boundary, and the four responsibilities (Authorizer/IdP, durable store, external witness, deployer process) explicitly outside it.
 
 ## Author & disclosures
 

@@ -53,12 +53,12 @@ class ClinicianOfRecord:
     same_or_similar_specialty: bool = False
 
     def is_valid(self, *, require_specialty_match: bool = False) -> tuple[bool, str]:
-        if not self.clinician_name:
-            return False, "clinician_name is empty"
-        if not self.license_number:
-            return False, "license_number is empty"
-        if not self.npi:
-            return False, "npi is empty"
+        if not self.clinician_name.strip():
+            return False, "clinician_name is empty/blank"
+        if not self.license_number.strip():
+            return False, "license_number is empty/blank"
+        if not self.npi.strip():
+            return False, "npi is empty/blank"
         if not self.reviewed:
             return False, "clinician did not attest review (reviewed=False)"
         if require_specialty_match and not self.same_or_similar_specialty:
@@ -101,16 +101,14 @@ class ClinicianOfRecordControl:
         still recorded for completeness.
         """
         if is_medical_necessity_denial:
-            valid = (
-                clinician is not None
-                and clinician.is_valid(require_specialty_match=require_specialty_match)[0]
+            # Evaluate the attestation once and reuse the (ok, reason) pair so
+            # the two branches cannot diverge.
+            ok, reason = (
+                (False, "no clinician supplied")
+                if clinician is None
+                else clinician.is_valid(require_specialty_match=require_specialty_match)
             )
-            if not valid:
-                reason = (
-                    "no clinician supplied"
-                    if clinician is None
-                    else clinician.is_valid(require_specialty_match=require_specialty_match)[1]
-                )
+            if not ok:
                 if self._chain is not None:
                     self._chain.append(
                         event_type=AuditEventType.POLICY_VIOLATION,

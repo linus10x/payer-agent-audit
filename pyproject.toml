@@ -3,13 +3,15 @@ requires = ["setuptools>=70", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["src", "."]
-include = ["payer_agent_audit*", "examples*"]
-exclude = ["tests*", "scripts*", "docs*"]
+where = ["src"]
+include = ["payer_agent_audit*"]
+exclude = ["tests*", "scripts*", "docs*", "examples*"]
 
 [tool.setuptools.package-dir]
 "" = "src"
-"examples" = "examples"
+
+[tool.setuptools.package-data]
+payer_agent_audit = ["py.typed"]
 
 [project]
 name = "payer-agent-audit"

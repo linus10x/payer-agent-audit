@@ -18,6 +18,7 @@ from payer_agent_audit.governance.autonomy_ladder import (
     PromotionGateNotMet,
     PromotionGateReport,
     check_a2_to_a3_promotion,
+    required_oversight,
 )
 from payer_agent_audit.governance.defcon import (
     DEFCON,
@@ -33,16 +34,19 @@ from payer_agent_audit.governance.effective_challenge_harness import (
 )
 from payer_agent_audit.governance.sovereign_veto import (
     Authorizer,
+    InMemoryVetoStateStore,
     SovereignVeto,
     VetoBlockedError,
     VetoReason,
     VetoRecord,
+    VetoStateStore,
 )
 from payer_agent_audit.governance.witness_anchor import (
     InMemoryWitness,
     RekorWitness,
     WitnessReceipt,
     WitnessRegister,
+    anchor_to_witness,
 )
 
 __all__ = [
@@ -57,6 +61,7 @@ __all__ = [
     "DEFCONMachine",
     "DEFCONOverrideRejectedError",
     "EffectiveChallengeHarness",
+    "InMemoryVetoStateStore",
     "InMemoryWitness",
     "IndependenceAttestation",
     "PromotionEvidence",
@@ -68,7 +73,10 @@ __all__ = [
     "VetoBlockedError",
     "VetoReason",
     "VetoRecord",
+    "VetoStateStore",
     "WitnessReceipt",
     "WitnessRegister",
+    "anchor_to_witness",
     "check_a2_to_a3_promotion",
+    "required_oversight",
 ]

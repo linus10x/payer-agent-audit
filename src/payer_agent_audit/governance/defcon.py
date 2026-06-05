@@ -29,9 +29,13 @@ import warnings
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import IntEnum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from payer_agent_audit.governance.sovereign_veto import Authorizer
+from payer_agent_audit.schemas.audit_event import AuditEventType, AutonomyLevel
+
+if TYPE_CHECKING:
+    from payer_agent_audit.governance.audit_chain import AuditChain
 
 
 class DEFCON(IntEnum):
@@ -50,9 +54,13 @@ class DEFCON(IntEnum):
 _HARD_STOP_STATES = frozenset({DEFCON.HALT, DEFCON.SHUTDOWN})
 
 
-@dataclass
+@dataclass(frozen=True)
 class RiskMetrics:
-    """Operational-risk inputs the machine evaluates. Domain-agnostic."""
+    """Operational-risk inputs the machine evaluates. Domain-agnostic.
+
+    Frozen — a pure input value object; a caller must not be able to mutate a
+    metrics instance mid-evaluation.
+    """
 
     breach_rate: float = 0.0  # e.g. UM-timeliness breaches / decisions
     anomaly_score: float = 0.0  # 0..1 anomaly detector output
@@ -84,10 +92,15 @@ class DEFCONMachine:
         self,
         authorizer: Authorizer | None = None,
         production: bool = False,
+        *,
+        audit_chain: AuditChain | None = None,
+        agent_id: str = "defcon-machine",
     ) -> None:
         self._level = DEFCON.NORMAL
         self._authorizer = authorizer
         self._production = production
+        self._audit_chain = audit_chain
+        self._agent_id = agent_id
         self._history: list[dict[str, Any]] = []
 
         if production and authorizer is None:
@@ -214,22 +227,41 @@ class DEFCONMachine:
         operator_id: str | None,
         metrics: RiskMetrics | None,
     ) -> None:
-        self._history.append(
-            {
-                "from": from_state.name,
-                "to": to_state.name,
-                "actor": actor,
-                "operator_id": operator_id,
-                "timestamp": datetime.now(UTC).isoformat(),
-                "metrics": None
-                if metrics is None
-                else {
-                    "breach_rate": metrics.breach_rate,
-                    "anomaly_score": metrics.anomaly_score,
-                    "consecutive_failures": metrics.consecutive_failures,
-                },
+        metrics_payload = (
+            None
+            if metrics is None
+            else {
+                "breach_rate": metrics.breach_rate,
+                "anomaly_score": metrics.anomaly_score,
+                "consecutive_failures": metrics.consecutive_failures,
             }
         )
+        record = {
+            "from": from_state.name,
+            "to": to_state.name,
+            "actor": actor,
+            "operator_id": operator_id,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "metrics": metrics_payload,
+        }
+        self._history.append(record)
+
+        # Chain the transition so DEFCON participates in the audit ledger like
+        # the other primitives (the "every governance event is chained" thesis).
+        if self._audit_chain is not None:
+            if to_state >= DEFCON.HALT:
+                event_type = AuditEventType.HALT_TRIGGERED
+            elif to_state > from_state:
+                event_type = AuditEventType.RISK_ESCALATION
+            else:
+                event_type = AuditEventType.RISK_DEESCALATION
+            self._audit_chain.append(
+                event_type=event_type,
+                autonomy_level=AutonomyLevel.A3,
+                agent_id=self._agent_id,
+                payload=record,
+                actor_id=operator_id,
+            )
 
     def history(self) -> list[dict[str, Any]]:
         return list(self._history)

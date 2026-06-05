@@ -27,7 +27,8 @@ abstract: >-
   benefit adjudication under insurance law, distinct from FDA medical-device
   regulation. Maps to reference regulatory anchors including the NAIC Model
   Bulletin on insurer use of AI, CMS-0057-F, ERISA 29 CFR 2560.503-1, and ACA
-  45 CFR 147.136. Zero runtime dependencies.
+  45 CFR 147.136. Zero runtime dependencies. Independent research; no employer
+  or client IP or confidential material.
 keywords:
   - ai-governance
   - autonomous-agents

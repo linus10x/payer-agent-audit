@@ -179,13 +179,16 @@ class AuditChain:
     def __init__(
         self,
         log_file: Path | None = None,
+        *,
         witness_register: WitnessRegister | None = None,
         deployer_id: str | None = None,
         chain_creation_iso: str | None = None,
         production: bool = False,
-        *,
         in_memory: bool = False,
     ) -> None:
+        # Safety-critical parameters (deployer_id, witness_register, production)
+        # are keyword-only so a positional slip cannot, e.g., pass deployer_id
+        # into witness_register on this governance primitive.
         self._events: list[AuditEvent] = []
         self._witness_register = witness_register
         self._production = production
@@ -397,7 +400,7 @@ class AuditChain:
     # ------------------------------------------------------------------ #
 
     def _write(self, event: AuditEvent) -> None:
-        if self.log_file is None:
+        if self.log_file is None:  # pragma: no cover - guarded by call sites
             return
         Path(self.log_file).parent.mkdir(parents=True, exist_ok=True)
         with open(self.log_file, "a", encoding="utf-8") as fh:
@@ -411,7 +414,7 @@ class AuditChain:
                     fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
 
     def _load_existing(self) -> None:
-        if self.log_file is None:
+        if self.log_file is None:  # pragma: no cover - guarded by call sites
             return
         p = Path(self.log_file)
         if not p.exists():

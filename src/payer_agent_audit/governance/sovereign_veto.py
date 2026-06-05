@@ -29,12 +29,15 @@ control.
 from __future__ import annotations
 
 import logging
+import uuid
 import warnings
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, Protocol, runtime_checkable
+
+from payer_agent_audit._normalize import normalize_principal_id
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +54,7 @@ class Authorizer(Protocol):
 
     def authorize(self, operator_id: str, action: str, context: dict[str, Any]) -> bool:
         """Return True iff ``operator_id`` is an authenticated, authorized principal."""
-        ...
+        ...  # pragma: no cover - Protocol method body
 
 
 class VetoReason(Enum):
@@ -181,7 +184,7 @@ class SovereignVeto:
     def trigger(self, reason: VetoReason, triggered_by: str, description: str) -> VetoRecord:
         """Record a new active veto."""
         record = VetoRecord(
-            veto_id=f"veto-{len(self._vetos) + 1}-{datetime.now(UTC).timestamp()}",
+            veto_id=f"veto-{uuid.uuid4()}",
             reason=reason,
             triggered_by=triggered_by,
             description=description,
@@ -207,13 +210,15 @@ class SovereignVeto:
              clear. In advisory mode (no authorizer) this step is skipped
              and the operator string is recorded unauthenticated.
         """
-        # 1. Self-clear is forbidden unconditionally (normalized comparison).
-        operator_norm = operator_id.strip().casefold()
+        # 1. Self-clear is forbidden unconditionally (normalized comparison:
+        #    NFKC + zero-width strip + casefold, so a Unicode-confusable or
+        #    zero-width disguise of the agent id cannot bypass the guard).
+        operator_norm = normalize_principal_id(operator_id)
         if not operator_norm:
             raise VetoBlockedError(
                 "operator_id is empty/blank; a veto must be cleared by a named operator"
             )
-        if operator_norm == self.agent_id.strip().casefold():
+        if operator_norm == normalize_principal_id(self.agent_id):
             raise VetoBlockedError(
                 f"self-clearing forbidden: operator_id {operator_id!r} resolves to the "
                 f"vetoed agent_id. A sovereign veto must be cleared by a human "

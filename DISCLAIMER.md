@@ -43,6 +43,10 @@ No deployer should treat any hardcoded timeframe, statutory citation, or `verifi
 
 The author makes no representations that this framework satisfies the requirements of any specific law, regulation, supervisory guidance, or accreditation standard. Retain qualified counsel and your own compliance, model-risk, and clinical functions to determine applicability.
 
+## Independent-research provenance
+
+This framework is an independent research work authored by Kunjar Bhaduri through North Texas Capital Investments. It was developed independently of, and outside the scope of, any employment or client engagement; on the author's own time and resources; without use of any employer's or client's confidential, proprietary, or trade-secret information, equipment, systems, or facilities; and it incorporates no employer or client intellectual property. It is not a work made for hire for any employer or client and does not represent the views of any employer or client. All regulatory content derives from public primary sources cited herein. Nothing in this repository discloses, and the author has not used, any confidential information of any third party.
+
 ## Bounded claims
 
 See [LIMITATIONS.md](LIMITATIONS.md) for what this framework does and does not claim, and [NEGATIVE-USE-CASES.md](NEGATIVE-USE-CASES.md) for statements adopters and counsel should not make in reliance on it.

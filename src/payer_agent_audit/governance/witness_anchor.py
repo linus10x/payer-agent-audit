@@ -52,7 +52,7 @@ class WitnessRegister(Protocol):
 
     def anchor(self, chain_head_hex: str) -> WitnessReceipt:
         """Submit ``chain_head_hex`` to the register and return a receipt."""
-        ...
+        ...  # pragma: no cover - Protocol method body
 
 
 @dataclass

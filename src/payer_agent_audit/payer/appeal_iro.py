@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from payer_agent_audit._normalize import normalize_principal_id
 from payer_agent_audit.payer.funding_type import FundingType, RequestCategory, obligations_for
 from payer_agent_audit.schemas.audit_event import AuditEventType, AutonomyLevel
 
@@ -42,10 +43,16 @@ class AppealPathway:
     iro_conflict_free: bool
 
     def independence_ok(self) -> tuple[bool, str]:
-        """ERISA full-and-fair-review: reviewer != original decision-maker."""
-        if not self.appeal_reviewer_id:
-            return False, "appeal_reviewer_id is empty"
-        if self.appeal_reviewer_id == self.original_decision_maker_id:
+        """ERISA full-and-fair-review: reviewer != original decision-maker.
+
+        Identity comparison is normalized (NFKC + zero-width strip + casefold)
+        so the same human cannot pass as an independent reviewer via a
+        whitespace/case/confusable variation of their id.
+        """
+        reviewer_norm = normalize_principal_id(self.appeal_reviewer_id)
+        if not reviewer_norm:
+            return False, "appeal_reviewer_id is empty/blank"
+        if reviewer_norm == normalize_principal_id(self.original_decision_maker_id):
             return False, (
                 "appeal reviewer is the original decision-maker — ERISA full-and-fair "
                 "review (29 CFR 2560.503-1(h)) requires an independent reviewer who "

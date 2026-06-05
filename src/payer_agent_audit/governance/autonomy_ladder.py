@@ -26,8 +26,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
 
+from payer_agent_audit._normalize import normalize_principal_id
 from payer_agent_audit.schemas.audit_event import AutonomyLevel
+
+if TYPE_CHECKING:
+    from payer_agent_audit.governance.audit_chain import AuditChain
 
 # This gate is ADVISORY. It evaluates an attested evidence record against
 # the promotion criteria; it does not itself enforce promotion or validate
@@ -65,14 +70,16 @@ class Attestation:
         """Return ``(ok, reason)``. Rejects self-attestation, missing
         evidence, stale timestamps, and a false/withheld claim.
 
-        Identity comparison is normalized (strip + casefold) so a trivial
-        whitespace/case variation of the agent id cannot defeat the
-        self-attestation guard, and a blank-after-strip attester is rejected.
+        Identity comparison is normalized (NFKC + zero-width strip + casefold,
+        see ``normalize_principal_id``) so neither a whitespace/case variation
+        nor a Unicode-confusable / zero-width disguise of the agent id can
+        defeat the self-attestation guard; a blank-after-normalization
+        attester is rejected.
         """
-        attester_norm = self.attester_id.strip().casefold()
+        attester_norm = normalize_principal_id(self.attester_id)
         if not attester_norm:
             return False, f"{self.claim}: attester_id is empty/blank (no independent attester)"
-        if attester_norm == agent_id.strip().casefold():
+        if attester_norm == normalize_principal_id(agent_id):
             return False, (
                 f"{self.claim}: self-attestation rejected — attester_id "
                 f"{self.attester_id!r} resolves to the agent being promoted"
@@ -136,6 +143,7 @@ def check_a2_to_a3_promotion(
     *,
     agent_id: str,
     now: datetime | None = None,
+    audit_chain: AuditChain | None = None,
 ) -> PromotionGateReport:
     """Evaluate the A2->A3 promotion gate against an attested record.
 
@@ -143,6 +151,10 @@ def check_a2_to_a3_promotion(
     unmet OR its attestation is invalid (self-attested, stale, evidence-
     less, or withheld). Returns the FULL failure list, not first-fail, so a
     deployer can remediate everything in one pass.
+
+    When an ``audit_chain`` is supplied, the evaluation (and its outcome) is
+    recorded as a ``PROMOTION_GATE_EVALUATED`` event so the advisory gate
+    participates in the audit ledger.
     """
     failures: list[str] = []
 
@@ -176,7 +188,24 @@ def check_a2_to_a3_promotion(
     if not ok:
         failures.append(f"circuit_breaker_test_recent invalid — {reason}")
 
-    return PromotionGateReport(passed=not failures, failures=tuple(failures))
+    report = PromotionGateReport(passed=not failures, failures=tuple(failures))
+
+    if audit_chain is not None:
+        from payer_agent_audit.schemas.audit_event import AuditEventType, AutonomyLevel
+
+        audit_chain.append(
+            event_type=AuditEventType.PROMOTION_GATE_EVALUATED,
+            autonomy_level=AutonomyLevel.A2,
+            agent_id=agent_id,
+            payload={
+                "transition": "A2->A3",
+                "passed": report.passed,
+                "failures": list(report.failures),
+                "advisory": report.advisory,
+            },
+        )
+
+    return report
 
 
 def required_oversight(level: AutonomyLevel) -> str:

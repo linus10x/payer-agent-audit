@@ -31,7 +31,7 @@ Run: `pytest tests/adversarial/test_al_probes.py` → all pass.
 |---|---|---|---|---|
 | 1 | SDLC integrity | ruff + ruff-format + mypy --strict + pre-commit + SHA-pinned CI | CI | implemented-control |
 | 2 | App/infra security | Bandit SAST · CodeQL · gitleaks · zero runtime deps | CI | implemented-control |
-| 3 | Test assurance | unit + property (hypothesis, thousands of cases) + golden corpus + mutation (`scripts/mutation_check.py`) + boundary scan; cov ≥90% (actual 98%) | CI | implemented-control |
+| 3 | Test assurance | unit + property (hypothesis, thousands of cases) + golden corpus + mutation (`scripts/mutation_check.py`, 100% kill) + boundary scan; cov gate ≥90% (actual 100% line coverage) | CI | implemented-control |
 | 4 | Model-risk (SR 11-7 analog) | Effective-challenge harness: challenger ≠ primary enforced; independence attested to chain | Library | implemented-control (independence is attested, not detected) |
 | 5 | Audit evidence (recordkeeping integrity) | Hash-chain ledger; genesis-branching verifier; in-place tamper detected on load + verify | Library | implemented-control (within trust boundary) |
 | 6 | External tamper-evidence | Witness anchor (OpenTimestamps/Rekor) non-optional in production mode | Library | documented-pattern (`RekorWitness` is a reference shape; deployer wires the client) |

@@ -24,7 +24,11 @@ mypy --strict src/payer_agent_audit/ --ignore-missing-imports
 pytest --cov=src/payer_agent_audit --cov-fail-under=90
 python3 scripts/mutation_check.py
 python3 scripts/banned_term_lint.py && python3 scripts/tamper_language_lint.py
+python3 scripts/no_internal_notes_lint.py
 ```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the trust-boundary model and where the
+five primitives + three controls sit relative to deployer-owned responsibilities.
 
 ## Versioning
 
