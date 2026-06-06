@@ -40,7 +40,9 @@ keywords:
   - erisa
   - cms
   - audit-trail
-license: "MIT OR Apache-2.0"
+license:
+  - MIT
+  - Apache-2.0
 version: "0.1.0"
 date-released: "2026-06-05"
 # DOI note: a Zenodo concept DOI is minted on first GitHub Release; each
