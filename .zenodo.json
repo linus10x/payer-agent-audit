@@ -1,0 +1,26 @@
+{
+  "upload_type": "software",
+  "title": "payer-agent-audit: Governance patterns for autonomous AI agents in health-insurance / payer operations",
+  "version": "0.1.0",
+  "access_right": "open",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Bhaduri, Kunjar",
+      "affiliation": "North Texas Capital Investments"
+    }
+  ],
+  "keywords": [
+    "ai-governance",
+    "autonomous-agents",
+    "health-insurance",
+    "payer",
+    "utilization-management",
+    "prior-authorization",
+    "naic",
+    "erisa",
+    "cms",
+    "audit-trail"
+  ],
+  "description": "Reference governance patterns, schemas, and runnable implementations for audit-ready autonomous AI agents in health-insurance / payer operations (utilization management, prior authorization, and claims/appeals support), aligned to the NAIC Model Bulletin framework. Ships five corrected-spec primitives (autonomy-ladder level-gate with independent attestation, un-self-clearable sovereign veto with a mandatory production-mode authorizer, tamper-detecting hash-chain ledger with a genesis-branching verifier and a production-mode external witness, DEFCON state machine with a transition-direction guard, and an effective-challenge harness enforcing challenger-not-equal-primary with an attested independence record), plus module (a) health-payer: funding-type-aware obligation routing (CMS vs ERISA vs state DOI vs ACA) and three controls (UM timeliness, clinician-of-record-on-denial, appeal/IRO pathway). The framework makes no medical-necessity or clinical determination; a payer coverage decision is a benefit adjudication under insurance law, distinct from FDA medical-device regulation. Maps to reference regulatory anchors including the NAIC Model Bulletin on the use of AI systems by insurers, CMS-0057-F, 42 CFR 438.210(d), ERISA 29 CFR 2560.503-1, and ACA 45 CFR 147.136. Reference IP for adoption, not a deployed control. Dual-licensed MIT OR Apache-2.0. Independent research; no employer or client intellectual property or confidential material. Zero runtime dependencies."
+}
