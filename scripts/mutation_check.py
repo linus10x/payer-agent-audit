@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reliable, src-layout-safe mutation pass (spine §7).
+"""Reliable, src-layout-safe mutation pass.
 
 Applies targeted source mutations one at a time to the primitive + control
 modules, runs the test suite against each mutant, and reports the kill score.

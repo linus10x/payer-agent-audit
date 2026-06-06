@@ -1,4 +1,4 @@
-"""Round-3 hardening tests (council 10/10 punch-list).
+"""Round-3 hardening tests.
 
 Unicode-confusable / zero-width guard bypass class, surviving-mutant boundary
 tests, prev_hash-mismatch tamper detection, DEFCON+promotion chain wiring, and

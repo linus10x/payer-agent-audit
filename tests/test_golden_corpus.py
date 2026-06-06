@@ -1,4 +1,4 @@
-"""Golden-corpus tests (spine §7 credibility tier).
+"""Golden-corpus tests (credibility tier).
 
 Each real public matter of record is asserted to be GOVERNED by the
 corresponding payer-agent-audit control. We assert control behavior, never a

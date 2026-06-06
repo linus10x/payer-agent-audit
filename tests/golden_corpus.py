@@ -1,4 +1,4 @@
-"""Golden corpus (spine §7 credibility tier) — real public matters of record.
+"""Golden corpus (credibility tier) — real public matters of record.
 
 Each entry is a curated, version-controlled public matter of record turned
 into a parametrized fixture asserting how payer-agent-audit's controls would
@@ -69,9 +69,10 @@ GOLDEN_LITIGATION: list[GoldenCase] = [
         filed_or_effective="2023-07-24",
         primary_source_url="https://dockets.justia.com/docket/california/caedce/2:2023cv01477/431351",
         matter_of_record=(
-            "Complaint alleges the PxDx (procedure-to-diagnosis) system enabled "
-            "bulk claim denials without individual file review. Matter of "
-            "record; no verdict on the merits asserted here."
+            "Complaint alleges the PxDx system enabled automatic claim denials "
+            "'in batches of hundreds or thousands' without individualized "
+            "evaluation of members' medical records. Matter of record; no verdict "
+            "on the merits asserted here."
         ),
         governing_control="clinician_of_record",
         extra={

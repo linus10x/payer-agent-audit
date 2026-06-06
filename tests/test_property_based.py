@@ -1,4 +1,4 @@
-"""Property-based tests (spine §7 volume tier) — thousands of cases per primitive.
+"""Property-based tests (volume tier) — thousands of cases per primitive.
 
 Uses ``hypothesis`` to generate the hard cases the happy path misses. The
 volume target is thousands of generated examples per primitive across the

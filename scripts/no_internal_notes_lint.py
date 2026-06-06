@@ -17,12 +17,23 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 _NAME_MARKERS = ("_internal",)
+# Specific internal-process / planning tokens that must never ship publicly.
+# Kept narrow on purpose — bare "internal" is NOT a marker (it false-positives on
+# "internal appeal", "internally consistent", etc.).
 _CONTENT_MARKERS = (
     "not published",
     "do not publish",
     "do not quote",
     "internal only",
     "not for publication",
+    "owner gate",
+    "council 10/10",
+    "_backing_copy",
+    "cross_applied",
+    "cross-applied",
+    "funnel flip",
+    "s3c",
+    "00_control",
 )
 _SCANNABLE_SUFFIXES = {".md", ".py", ".txt", ".yaml", ".yml", ".rst", ".cff", ".toml"}
 

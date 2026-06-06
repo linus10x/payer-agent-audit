@@ -6,6 +6,7 @@ Governance patterns for autonomous AI agents in health-insurance / payer operati
 
 ![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)
 ![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20564377.svg)](https://doi.org/10.5281/zenodo.20564377)
 ![mypy: strict](https://img.shields.io/badge/mypy-strict-blue)
 ![ruff](https://img.shields.io/badge/lint-ruff-orange)
 ![coverage 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)

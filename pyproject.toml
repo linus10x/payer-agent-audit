@@ -15,7 +15,7 @@ payer_agent_audit = ["py.typed"]
 
 [project]
 name = "payer-agent-audit"
-version = "0.1.0"
+version = "0.1.1"
 description = "Governance patterns for autonomous AI agents in health-insurance / payer operations (aligned to the NAIC Model Bulletin framework)"
 readme = "README.md"
 license = { text = "MIT OR Apache-2.0" }
@@ -72,7 +72,7 @@ security-dev = [
     "bandit[toml]>=1.7",
     "pip-audit>=2.7",
 ]
-# Mutation-testing harness (spine §7 mutation pass). Opt-in; not in the
+# Mutation-testing harness. Opt-in; not in the
 # default CI matrix.
 mutation = ["mutmut>=2.5"]
 
@@ -132,7 +132,7 @@ exclude_lines = [
 ]
 
 [tool.mutmut]
-# Mutation pass (spine §7). The reliable, src-layout-safe harness is
+# Mutation pass. The reliable, src-layout-safe harness is
 # `scripts/mutation_check.py` (run: `python3 scripts/mutation_check.py`) — it
 # applies targeted operator/boundary/boolean mutations one at a time and
 # reports the kill score. (mutmut 3.x's repo-copy runner mishandles this

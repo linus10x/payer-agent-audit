@@ -4,9 +4,22 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-06-06
+
+Documentation and metadata patch (no code/behavior change).
+
+### Changed
+- Backfilled the Zenodo DOI (concept `10.5281/zenodo.20564377`) into
+  `CITATION.cff`, the README badge, and `DOI-PLAN.md`; added `.zenodo.json`
+  for native, reliable Zenodo metadata.
+- Scrubbed internal build-process references from public files (planning notes,
+  section markers) and strengthened `scripts/no_internal_notes_lint.py` to catch
+  that class.
+- Litigation golden-corpus entry restated using the complaint's own words.
+
 ## [0.1.0] — 2026-06-05
 
-Initial release. Module (a) health-payer, under the NAIC umbrella.
+Initial release. Module (a) health-payer (aligned to the NAIC Model Bulletin framework).
 
 ### Added
 

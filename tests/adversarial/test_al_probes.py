@@ -1,10 +1,11 @@
-"""AL-PROBES — the five primitive adversarial probes (Tier-1 audit protocol).
+"""AL-PROBES — the five primitive adversarial probes.
 
-Each probe re-authors the catalog's exact failing construction as a
-committed, reproducible test, and asserts that payer-agent-audit's
-corrected-spec primitive REFUSES the attack. These are the reproducible
-evidence that the five primitives meet the §2 corrected standard — they
-do NOT replicate finserv's historical defects (AL-PROBE-02/03b/05).
+Each probe re-authors the exact failing construction that an
+earlier-generation governance library admitted, as a committed,
+reproducible test, and asserts that payer-agent-audit's corrected-spec
+primitive REFUSES the attack. These are the reproducible evidence that the
+five primitives meet the corrected primitive standard — they do NOT
+replicate those historical defects.
 
   AL-PROBE-01  P1  promote-without-lower-gates -> refused
   AL-PROBE-02  P2  self-clear / unauthenticated-operator veto clear -> refused
@@ -179,7 +180,7 @@ def test_al_probe_02c_production_requires_authorizer():
 
 
 def test_al_probe_03_hardened_chain_verifies_true():
-    """The catalog defect (AL-PROBE-03b): a clean deployer-keyed chain raised
+    """The defect this guards against: a clean deployer-keyed chain raising
     a false TAMPER because the verifier seeded '0'*64 unconditionally. Our
     verifier BRANCHES the genesis seed, so a hardened chain verifies True."""
     chain = AuditChain(deployer_id="acme-health-prod", in_memory=True)
