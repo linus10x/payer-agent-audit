@@ -15,7 +15,7 @@ payer_agent_audit = ["py.typed"]
 
 [project]
 name = "payer-agent-audit"
-version = "0.1.2"
+version = "0.1.3"
 description = "Governance patterns for autonomous AI agents in health-insurance / payer operations (aligned to the NAIC Model Bulletin framework)"
 readme = "README.md"
 license = { text = "MIT OR Apache-2.0" }
