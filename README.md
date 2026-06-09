@@ -1,9 +1,13 @@
 # payer-agent-audit
 
+**The audit record you hand a regulator when an AI agent touches a UM, prior-auth, or claims/appeals decision — not the decision itself.**
+
+It **makes no medical-necessity or clinical determination.** It records whether a human clinician was present and attested, whether the decision was timely under the rule that governs *this* plan, and whether appeal rights were afforded — and it writes every check to a hash-chain ledger that detects tampering within its trust boundary (not prevention; see the threat model).
+
 **The governance library that documents what it does *not* do — in code-enforced detail.** Detection, not prevention. Recordkeeping, not medical-necessity. Reference IP, not a deployed control. Most governance tooling oversells; this one ships its own failure matrix and an adversarial probe per primitive.
 
-Governance patterns for autonomous AI agents in health-insurance / payer operations — utilization management, prior authorization, and claims/appeals — aligned to the NAIC Model Bulletin framework. This is **not** a deployed control operating in production, and it **makes no medical-necessity or clinical determination**: a payer coverage decision is a benefit adjudication under insurance law, distinct from FDA medical-device regulation. See [LIMITATIONS.md](LIMITATIONS.md).
-
+[![CI](https://github.com/linus10x/payer-agent-audit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/linus10x/payer-agent-audit/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/linus10x/payer-agent-audit?sort=semver)](https://github.com/linus10x/payer-agent-audit/releases)
 ![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)
 ![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20564377.svg)](https://doi.org/10.5281/zenodo.20564377)
@@ -13,6 +17,23 @@ Governance patterns for autonomous AI agents in health-insurance / payer operati
 ![mutation 100%](https://img.shields.io/badge/mutation-100%25-brightgreen)
 ![Zero runtime deps](https://img.shields.io/badge/runtime%20deps-0-lightgrey)
 
+> **156 tests · 100% coverage · 14/14 mutation kill · 5 AL-PROBES · golden corpus of real public matters (Lokken v. UnitedHealth, Kisting-Leung v. Cigna) · mypy --strict · py.typed · zero runtime deps · 4 SHA-pinned security workflows.**
+
+---
+
+## Part of the Autonomy Ladder™ family
+
+Six co-equal regulated-vertical reference libraries implementing the **Autonomy Ladder** — a governance framework for autonomous AI in regulated operations (A0→A4, every rung demotable). **Framework + whitepaper: [autonomy-ladder.io](https://autonomy-ladder.io).**
+
+| Vertical | Library |
+|---|---|
+| Cross-vertical financial services | [`finserv-agent-audit`](https://github.com/linus10x/finserv-agent-audit) |
+| Banking (model risk · ECOA/Reg B · BSA/AML/OFAC) | [`banking-agent-audit`](https://github.com/linus10x/banking-agent-audit) |
+| Payments (OFAC · Reg E · rail finality) | [`payments-agent-audit`](https://github.com/linus10x/payments-agent-audit) |
+| Health-insurance payer (UM · prior auth · appeals) | **[`payer-agent-audit`](https://github.com/linus10x/payer-agent-audit)** |
+| SEC-registered investment advisers (Advisers Act §206) | [`private-capital-agent-audit`](https://github.com/linus10x/private-capital-agent-audit) |
+| Commercial real estate | [`cre-agent-audit`](https://github.com/linus10x/cre-agent-audit) |
+
 ---
 
 ## Table of Contents
@@ -20,8 +41,9 @@ Governance patterns for autonomous AI agents in health-insurance / payer operati
 - [Why this exists](#why-this-exists)
 - [Quick start](#quick-start)
 - [The five primitives](#the-five-primitives)
-- [Module (a) — health-payer controls](#module-a--health-payer-controls)
+- [Health-payer controls](#health-payer-controls)
 - [Funding-type obligation routing](#funding-type-obligation-routing)
+- [Trust boundary — what's in, what's yours](#trust-boundary--whats-in-whats-yours)
 - [Threat model at a glance](#threat-model-at-a-glance)
 - [Regulatory mapping](#regulatory-mapping)
 - [What this is and is not](#what-this-is-and-is-not)
@@ -48,6 +70,8 @@ pip install payer-agent-audit          # zero runtime dependencies
 payer-audit info
 payer-audit obligations --funding self_funded_erisa --category standard_preservice
 ```
+
+The honest path runs the **breach**, not the happy case — an autonomous decision that blows the deadline, and the ledger that records it:
 
 ```python
 from payer_agent_audit.governance import AuditChain
@@ -85,7 +109,9 @@ Built fresh to a corrected specification — each primitive ships with an advers
 | **DEFCON state machine** | `governance/defcon.py` | Graduated autonomy throttle; immediate escalation, hardened de-escalation — a **transition-direction guard** forbids a one-call `HALT`/`SHUTDOWN → NORMAL`. |
 | **Effective-challenge harness** | `governance/effective_challenge_harness.py` | Independent model challenge; **enforces challenger ≠ primary** (a model cannot self-challenge to a clean accept); records an operator **independence attestation** to the chain. |
 
-## Module (a) — health-payer controls
+## Health-payer controls
+
+This is **v1 — the health-insurance payer vertical**. The three controls below sit on top of the five primitives and encode UM / prior-auth / appeals obligations. (P&C and Life & Annuity are a separate vertical on the roadmap — out of scope here, and the library says so rather than implying coverage it does not have.)
 
 | Control | Module | Governs |
 |---|---|---|
@@ -93,7 +119,7 @@ Built fresh to a corrected specification — each primitive ships with an advers
 | **Clinician-of-record-on-denial** | `payer/clinician_of_record.py` | A medical-judgment denial requires an attested, licensed clinician who actually reviewed the case — refused otherwise, and the refusal is itself recorded. |
 | **Appeal / IRO pathway** | `payer/appeal_iro.py` | Internal-appeal + IRO external-review rights afforded; ERISA full-and-fair-review independence (the appeal reviewer is not the original decision-maker). |
 
-> Module (b) P&C / Life-&-Annuity is on the roadmap and **not yet shipped** — see [LIMITATIONS.md](LIMITATIONS.md). This README does not claim P&C or Life/Annuity coverage.
+> P&C / Life & Annuity coverage is on the roadmap and **not yet shipped** — see [LIMITATIONS.md](LIMITATIONS.md). This README does not claim it.
 
 ## Funding-type obligation routing
 
@@ -109,6 +135,28 @@ The same denial carries different obligations depending on who funds the plan. T
 
 A deployer may **tighten** a verified deadline (a stricter internal SLA), never loosen one past the regulatory floor.
 
+## Trust boundary — what's in, what's yours
+
+The honesty thesis of this library is the boundary. Shipped-and-tested controls draw it; everything across it is handed back to you, explicitly, by design.
+
+| Component | In boundary (shipped & tested) | Across boundary (deployer-owned) |
+|---|---|---|
+| Five governance primitives (P1–P5) | ✅ | |
+| Three health-payer controls (UM / clinician / appeal) | ✅ | |
+| Hash-chain ledger (within-boundary tamper detection) | ✅ | |
+| External witness anchor (regenerated-chain detection) | | ⬜ deployer |
+| Authorizer / IdP / KMS (the principal behind `operator_id`) | | ⬜ deployer |
+| Durable veto state store (default is in-memory) | | ⬜ deployer |
+| Second-line review process (challenger independence) | | ⬜ deployer |
+
+**Three responsibilities the deployer must wire — production mode fails closed without them:**
+
+1. **Authorizer / IdP / KMS.** `operator_id` is only as strong as the authenticated-principal check behind it.
+2. **Durable state store.** The default veto store is in-memory and lost on restart; wire your own.
+3. **External witness.** The chain is internally consistent, but an attacker with write access can regenerate it end-to-end — only an out-of-band witness (OpenTimestamps / Rekor / a regulator log) makes that detectable.
+
+Full diagram and the four-row deployer-responsibility table: [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## Threat model at a glance
 
 | Threat | In-boundary? | What stops it |
@@ -119,7 +167,7 @@ A deployer may **tighten** a verified deadline (a stricter internal SLA), never 
 | Whole chain regenerated by an attacker with write access | ❌ across boundary | **Only** an external witness anchor — your wiring |
 | Operator falsely attests an independent challenger | ❌ across boundary | Second-line model-risk review — your process |
 
-Shipped-and-tested controls draw the trust boundary; the across-boundary rows are handed back to the deployer, explicitly, by design. Full 8-row matrix with regulatory mappings: [FAILURE-MODES.md](FAILURE-MODES.md).
+Full 8-row matrix with regulatory mappings: [FAILURE-MODES.md](FAILURE-MODES.md).
 
 ## Regulatory mapping
 
@@ -134,11 +182,11 @@ Reference mappings to help a deployer point qualified counsel at relevant clause
 
 ## What this is and is not
 
+- It **makes no medical-necessity or clinical determination.** The clinician's judgment belongs to the clinician; this framework governs whether that judgment is present, attested, timely, and appealable. A payer coverage decision is a benefit adjudication under insurance law, distinct from FDA medical-device regulation.
 - It **is** reference IP for adoption: documented, tested governance patterns with zero runtime dependencies.
 - It **is not** a deployed control, a medical device, FDA-cleared software, legal advice, or a guarantee of any regulatory outcome.
-- It **makes no medical-necessity or clinical determination.** The clinician's judgment belongs to the clinician; this framework governs whether that judgment is present, attested, timely, and appealable.
 
-The framework is the governed pattern; the production deployment is the deployer's substrate underneath it. This repo gives you the first and refuses to pretend it gives you the second.
+The framework is the governed pattern; the production deployment is the deployer's substrate underneath it. This repo gives you the first and refuses to pretend it gives you the second. See [LIMITATIONS.md](LIMITATIONS.md).
 
 ## Testing
 
@@ -148,7 +196,7 @@ pytest --cov=src/payer_agent_audit --cov-fail-under=90      # unit + property + 
 python3 scripts/mutation_check.py                            # mutation pass (kill score)
 ```
 
-The suite includes unit + contract tests, property-based tests (thousands of generated cases per primitive), a golden corpus of public matters of record (each with a primary-source URL), the five AL-PROBES under `tests/adversarial/`, and a payer-not-FDA-SaMD boundary scan. The gate is **≥90%**; the suite currently runs at **100% line coverage with a 100% mutation kill** — coverage is a floor, not a finish line (see [docs/ASSURANCE-CATALOG.md](docs/ASSURANCE-CATALOG.md)).
+The suite includes unit + contract tests, property-based tests (thousands of generated cases per primitive), a golden corpus of public matters of record (each with a primary-source URL — including *Estate of Gene B. Lokken v. UnitedHealth Group* and *Kisting-Leung v. Cigna*), the five AL-PROBES under `tests/adversarial/`, and a payer-not-FDA-SaMD boundary scan. The gate is **≥90%**; the suite currently runs at **156 tests, 100% line coverage, and a 14/14 (100%) mutation kill** — coverage is a floor, not a finish line (see [docs/ASSURANCE-CATALOG.md](docs/ASSURANCE-CATALOG.md)). The same checks run in CI on every push (badge above is live, not self-asserted).
 
 ## Who this is for
 
@@ -158,7 +206,7 @@ Health-plan model-risk, compliance, and engineering teams putting autonomy into 
 
 ## Architecture
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the trust-boundary diagram — the five primitives and three controls inside the boundary, and the four responsibilities (Authorizer/IdP, durable store, external witness, deployer process) explicitly outside it.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the trust-boundary diagram — the five primitives and three controls inside the boundary, and the deployer responsibilities (Authorizer/IdP, durable store, external witness, second-line process) explicitly outside it.
 
 ## Author & disclosures
 
