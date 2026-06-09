@@ -1,23 +1,62 @@
 # payer-agent-audit
 
-**The audit record you hand a regulator when an AI agent touches a UM, prior-auth, or claims/appeals decision — not the decision itself.**
-
-It **makes no medical-necessity or clinical determination.** It records whether a human clinician was present and attested, whether the decision was timely under the rule that governs *this* plan, and whether appeal rights were afforded — and it writes every check to a hash-chain ledger that detects tampering within its trust boundary (not prevention; see the threat model).
-
-**The governance library that documents what it does *not* do — in code-enforced detail.** Detection, not prevention. Recordkeeping, not medical-necessity. Reference IP, not a deployed control. Most governance tooling oversells; this one ships its own failure matrix and an adversarial probe per primitive.
+**The audit record for a UM, prior-auth, or claims/appeals decision when an AI agent touches it — not the medical-necessity call.**
 
 [![CI](https://github.com/linus10x/payer-agent-audit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/linus10x/payer-agent-audit/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/linus10x/payer-agent-audit?sort=semver)](https://github.com/linus10x/payer-agent-audit/releases)
-![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)
-![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20564377.svg)](https://doi.org/10.5281/zenodo.20564377)
-![mypy: strict](https://img.shields.io/badge/mypy-strict-blue)
-![ruff](https://img.shields.io/badge/lint-ruff-orange)
 ![coverage 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)
-![mutation 100%](https://img.shields.io/badge/mutation-100%25-brightgreen)
-![Zero runtime deps](https://img.shields.io/badge/runtime%20deps-0-lightgrey)
+![tests 156](https://img.shields.io/badge/tests-156-brightgreen)
+![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
+![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20564377.svg)](https://doi.org/10.5281/zenodo.20564377)
+[![Autonomy Ladder family](https://img.shields.io/badge/Autonomy%20Ladder-family-1f3a5f)](https://github.com/linus10x/autonomy-ladder-libraries)
 
-> **156 tests · 100% coverage · 14/14 mutation kill · 5 AL-PROBES · golden corpus of real public matters (Lokken v. UnitedHealth, Kisting-Leung v. Cigna) · mypy --strict · py.typed · zero runtime deps · 4 SHA-pinned security workflows.**
+> **What this is** — the audit record for a UM / prior-auth / claims decision: it records whether a human clinician was present and attested, whether the decision was timely under the rule that governs *this* plan, and whether appeal rights were afforded. It writes every check to a hash-chain ledger that detects tampering within its trust boundary.
+>
+> **What this is not** — it **makes NO medical-necessity or clinical determination.** Not the coverage decision, not a medical device, not FDA-cleared software, not legal advice, not a deployed control. Detection, not prevention. Recordkeeping, not medical necessity. Reference IP to adapt, not a product to install.
+>
+> **Who this is for** — a health plan's compliance, model-risk, or engineering lead putting autonomy into UM/PA/claims workflows, and the diligence teams who have to assess one.
+
+## 30-second tour
+
+Most governance tooling ships a dashboard and a compliance checkbox. This ships a hash-chain evidence ledger, an adversarial probe per primitive, and a written list of the things it deliberately does **not** do. Five domain-agnostic governance primitives (level-gate · sovereign veto · hash-chain ledger · DEFCON · effective-challenge harness) carry three health-payer controls (UM timeliness · clinician-of-record · appeal/IRO) on top. Funding-type-aware: the same denial routes to CMS-0057-F, ERISA, or a state DOI clock depending on who funds the plan.
+
+**156 tests · 100% coverage · 14/14 mutation kill · 5 AL-PROBES · golden corpus of real public matters (Lokken v. UnitedHealth, Kisting-Leung v. Cigna) · mypy --strict · py.typed · zero runtime deps · 4 SHA-pinned security workflows.**
+
+## Read me first
+
+1. **A UM-timeliness test, the breach not the happy path** — an autonomous decision that blows the deadline, and the ledger that records it:
+
+   ```python
+   from payer_agent_audit.governance import AuditChain
+   from payer_agent_audit.payer import UMTimelinessControl, FundingType, RequestCategory
+   from datetime import datetime, timedelta, UTC
+
+   chain = AuditChain(deployer_id="acme-health-prod")          # hardened genesis
+   received = datetime(2026, 6, 1, 8, 0, tzinfo=UTC)
+   result = UMTimelinessControl(chain).check(
+       funding_type=FundingType.MEDICARE_ADVANTAGE,
+       category=RequestCategory.EXPEDITED_URGENT,              # CMS-0057-F 72h
+       request_received_at=received,
+       decision_made_at=received + timedelta(hours=80),        # 80h > 72h
+       case_ref="PA-12345",
+   )
+   assert result.met is False                                  # breach, recorded to the chain
+   assert chain.verify()
+   ```
+
+2. **[WORKED_EXAMPLE.md](WORKED_EXAMPLE.md)** — the full path end to end: a decision class, an agent acting, the envelope catching the out-of-envelope case, the audit entry, and the demotion. Runnable: `python3 examples/worked_example.py`.
+
+3. **[autonomy-ladder.io](https://autonomy-ladder.io)** — the framework, the whitepaper, and the six-vertical family this library belongs to. Primitive-to-rung mapping: [AUTONOMY_LADDER.md](AUTONOMY_LADDER.md).
+
+## Install
+
+```bash
+pip install payer-agent-audit          # zero runtime dependencies
+payer-audit info
+payer-audit obligations --funding self_funded_erisa --category standard_preservice
+```
+
+Runnable end-to-end: [`examples/quickstart_um_timeliness.py`](examples/quickstart_um_timeliness.py) and [`examples/worked_example.py`](examples/worked_example.py).
 
 ---
 
@@ -49,7 +88,6 @@ Six co-equal regulated-vertical reference libraries implementing the **Autonomy 
 ## Table of Contents
 
 - [Why this exists](#why-this-exists)
-- [Quick start](#quick-start)
 - [The five primitives](#the-five-primitives)
 - [Health-payer controls](#health-payer-controls)
 - [Funding-type obligation routing](#funding-type-obligation-routing)
@@ -71,41 +109,7 @@ Payers are putting autonomous and AI-assisted systems into utilization managemen
 
 Where governance tooling typically ships a dashboard and a compliance checkbox, this ships a hash-chained evidence ledger, an adversarial probe per primitive, and a written list of the things it deliberately does not do.
 
-This framework is the recordkeeping and process-gating answer to that question. It does not decide medical necessity. It refuses to let an autonomous agent issue a medical-judgment denial without an attested clinician of record, checks decision timeliness against the rule that the plan's funding type actually imposes, and writes every check to a hash-chained ledger. These are tested reference patterns — not academic proposals, and not a turnkey product.
-
-## Quick start
-
-```bash
-pip install payer-agent-audit          # zero runtime dependencies
-payer-audit info
-payer-audit obligations --funding self_funded_erisa --category standard_preservice
-```
-
-The honest path runs the **breach**, not the happy case — an autonomous decision that blows the deadline, and the ledger that records it:
-
-```python
-from payer_agent_audit.governance import AuditChain
-from payer_agent_audit.payer import (
-    UMTimelinessControl, FundingType, RequestCategory,
-)
-from datetime import datetime, timedelta, UTC
-
-chain = AuditChain(deployer_id="acme-health-prod")          # hardened genesis
-control = UMTimelinessControl(audit_chain=chain)
-
-received = datetime(2026, 6, 1, 8, 0, tzinfo=UTC)
-result = control.check(
-    funding_type=FundingType.MEDICARE_ADVANTAGE,
-    category=RequestCategory.EXPEDITED_URGENT,              # CMS-0057-F 72h
-    request_received_at=received,
-    decision_made_at=received + timedelta(hours=80),        # 80h > 72h
-    case_ref="PA-12345",
-)
-assert result.met is False                                  # breach, recorded to the chain
-assert chain.verify()
-```
-
-Runnable end-to-end: [`examples/quickstart_um_timeliness.py`](examples/quickstart_um_timeliness.py) — `python examples/quickstart_um_timeliness.py`.
+This framework is the recordkeeping and process-gating answer to that question. It does not decide medical necessity. It refuses to let an autonomous agent issue a medical-judgment denial without an attested clinician of record, checks decision timeliness against the rule that the plan's funding type actually imposes, and writes every check to a hash-chained ledger. These are tested reference patterns — not academic proposals, and not a turnkey product. (Install and a first runnable breach are in [Read me first](#read-me-first), above.)
 
 ## The five primitives
 
