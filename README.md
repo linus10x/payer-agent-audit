@@ -24,7 +24,26 @@ Most governance tooling ships a dashboard and a compliance checkbox. This ships 
 
 ## Read me first
 
-1. **A UM-timeliness test, the breach not the happy path** — an autonomous decision that blows the deadline, and the ledger that records it:
+1. **The clinician-of-record break, an autonomous denial with no human reviewer** — an agent issues a medical-necessity denial with no attested clinician of record. The control refuses it and records the refusal to the chain:
+
+   ```python
+   from payer_agent_audit.governance import AuditChain
+   from payer_agent_audit.payer import ClinicianOfRecordControl, ClinicianOfRecordMissingError
+
+   chain = AuditChain(deployer_id="acme-health-prod")          # hardened genesis
+   try:
+       ClinicianOfRecordControl(chain).attest_denial(
+           case_ref="PA-12345",
+           is_medical_necessity_denial=True,
+           clinician=None,                                     # an agent denies care, no human reviewer
+       )
+       raise SystemExit("ungoverned denial went through")      # never reached
+   except ClinicianOfRecordMissingError:
+       pass                                                    # refused, and the refusal is on the chain
+   assert chain.verify()                                       # POLICY_VIOLATION recorded, tamper-evident
+   ```
+
+2. **A UM-timeliness test, the breach not the happy path** — an autonomous decision that blows the deadline, and the ledger that records it:
 
    ```python
    from payer_agent_audit.governance import AuditChain
@@ -44,9 +63,9 @@ Most governance tooling ships a dashboard and a compliance checkbox. This ships 
    assert chain.verify()
    ```
 
-2. **[WORKED_EXAMPLE.md](WORKED_EXAMPLE.md)** — the full path end to end: a decision class, an agent acting, the envelope catching the out-of-envelope case, the audit entry, and the demotion. Runnable: `python3 examples/worked_example.py`.
+3. **[WORKED_EXAMPLE.md](WORKED_EXAMPLE.md)** — the full path end to end: a decision class, an agent acting, the envelope catching the out-of-envelope case, the audit entry, and the demotion. Runnable: `python3 examples/worked_example.py`.
 
-3. **[autonomy-ladder.io](https://autonomy-ladder.io)** — the framework, the whitepaper, and the six-vertical family this library belongs to. Primitive-to-rung mapping: [AUTONOMY_LADDER.md](AUTONOMY_LADDER.md).
+4. **[autonomy-ladder.io](https://autonomy-ladder.io)** — the framework, the whitepaper, and the six-vertical family this library belongs to. Primitive-to-rung mapping: [AUTONOMY_LADDER.md](AUTONOMY_LADDER.md).
 
 ## Install
 
