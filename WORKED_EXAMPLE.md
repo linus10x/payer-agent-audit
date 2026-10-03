@@ -22,7 +22,7 @@ The agent reaches a determination on case `PA-12345` — a Medicare Advantage ex
 
 ```python
 received = datetime(2026, 6, 1, 8, 0, tzinfo=UTC)
-decided  = received + timedelta(hours=80)   # the agent decided at hour 80
+decided = received + timedelta(hours=80)  # the agent decided at hour 80
 ```
 
 ### 3. The envelope catches the out-of-envelope case
@@ -34,8 +34,11 @@ ClinicianOfRecordControl(chain).attest_denial(
     case_ref="PA-12345",
     is_medical_necessity_denial=True,
     clinician=ClinicianOfRecord(
-        clinician_name="Dr. A. Reviewer", license_number="TX-12345",
-        npi="1234567890", reviewed=True, same_or_similar_specialty=True,
+        clinician_name="Dr. A. Reviewer",
+        license_number="TX-12345",
+        npi="1234567890",
+        reviewed=True,
+        same_or_similar_specialty=True,
     ),
 )
 ```
@@ -50,7 +53,7 @@ result = UMTimelinessControl(chain).check(
     decision_made_at=decided,
     case_ref="PA-12345",
 )
-assert result.met is False   # the breach is real, not the happy path
+assert result.met is False  # the breach is real, not the happy path
 ```
 
 ### 4. The audit entry
@@ -66,11 +69,13 @@ assert chain.verify()
 The breach is an operational-risk signal — **not** a clinical determination. It escalates the agent's DEFCON autonomy state to `HALT`, and a sovereign veto engages so the agent cannot keep issuing this decision class until a human re-authorizes it.
 
 ```python
-defcon.evaluate(RiskMetrics(breach_rate=0.35))          # -> DEFCON.HALT
-veto.trigger(reason=VetoReason.UM_TIMELINESS_AT_RISK,
-             triggered_by="compliance-monitor",
-             description="PA-12345 decided at 80h vs the 72h CMS-0057-F floor")
-assert veto.allow_execution() is False                  # halted pending human re-auth
+defcon.evaluate(RiskMetrics(breach_rate=0.35))  # -> DEFCON.HALT
+veto.trigger(
+    reason=VetoReason.UM_TIMELINESS_AT_RISK,
+    triggered_by="compliance-monitor",
+    description="PA-12345 decided at 80h vs the 72h CMS-0057-F floor",
+)
+assert veto.allow_execution() is False  # halted pending human re-auth
 ```
 
 ## Actual output

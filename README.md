@@ -30,17 +30,17 @@ Most governance tooling ships a dashboard and a compliance checkbox. This ships 
    from payer_agent_audit.governance import AuditChain
    from payer_agent_audit.payer import ClinicianOfRecordControl, ClinicianOfRecordMissingError
 
-   chain = AuditChain(deployer_id="acme-health-prod")          # hardened genesis
+   chain = AuditChain(deployer_id="acme-health-prod")  # hardened genesis
    try:
        ClinicianOfRecordControl(chain).attest_denial(
            case_ref="PA-12345",
            is_medical_necessity_denial=True,
-           clinician=None,                                     # an agent denies care, no human reviewer
+           clinician=None,  # an agent denies care, no human reviewer
        )
-       raise SystemExit("ungoverned denial went through")      # never reached
+       raise SystemExit("ungoverned denial went through")  # never reached
    except ClinicianOfRecordMissingError:
-       pass                                                    # refused, and the refusal is on the chain
-   assert chain.verify()                                       # POLICY_VIOLATION recorded, tamper-evident
+       pass  # refused, and the refusal is on the chain
+   assert chain.verify()  # POLICY_VIOLATION recorded, tamper-evident
    ```
 
 2. **A UM-timeliness test, the breach not the happy path** — an autonomous decision that blows the deadline, and the ledger that records it:
@@ -50,16 +50,16 @@ Most governance tooling ships a dashboard and a compliance checkbox. This ships 
    from payer_agent_audit.payer import UMTimelinessControl, FundingType, RequestCategory
    from datetime import datetime, timedelta, UTC
 
-   chain = AuditChain(deployer_id="acme-health-prod")          # hardened genesis
+   chain = AuditChain(deployer_id="acme-health-prod")  # hardened genesis
    received = datetime(2026, 6, 1, 8, 0, tzinfo=UTC)
    result = UMTimelinessControl(chain).check(
        funding_type=FundingType.MEDICARE_ADVANTAGE,
-       category=RequestCategory.EXPEDITED_URGENT,              # CMS-0057-F 72h
+       category=RequestCategory.EXPEDITED_URGENT,  # CMS-0057-F 72h
        request_received_at=received,
-       decision_made_at=received + timedelta(hours=80),        # 80h > 72h
+       decision_made_at=received + timedelta(hours=80),  # 80h > 72h
        case_ref="PA-12345",
    )
-   assert result.met is False                                  # breach, recorded to the chain
+   assert result.met is False  # breach, recorded to the chain
    assert chain.verify()
    ```
 
