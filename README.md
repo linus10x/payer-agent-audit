@@ -30,17 +30,17 @@ Most governance tooling ships a dashboard and a compliance checkbox. This ships 
    from payer_agent_audit.governance import AuditChain
    from payer_agent_audit.payer import ClinicianOfRecordControl, ClinicianOfRecordMissingError
 
-   chain = AuditChain(deployer_id="acme-health-prod")          # hardened genesis
+   chain = AuditChain(deployer_id="acme-health-prod")  # hardened genesis
    try:
        ClinicianOfRecordControl(chain).attest_denial(
            case_ref="PA-12345",
            is_medical_necessity_denial=True,
-           clinician=None,                                     # an agent denies care, no human reviewer
+           clinician=None,  # an agent denies care, no human reviewer
        )
-       raise SystemExit("ungoverned denial went through")      # never reached
+       raise SystemExit("ungoverned denial went through")  # never reached
    except ClinicianOfRecordMissingError:
-       pass                                                    # refused, and the refusal is on the chain
-   assert chain.verify()                                       # POLICY_VIOLATION recorded, tamper-evident
+       pass  # refused, and the refusal is on the chain
+   assert chain.verify()  # POLICY_VIOLATION recorded, tamper-evident
    ```
 
 2. **A UM-timeliness test, the breach not the happy path** — an autonomous decision that blows the deadline, and the ledger that records it:
@@ -50,16 +50,16 @@ Most governance tooling ships a dashboard and a compliance checkbox. This ships 
    from payer_agent_audit.payer import UMTimelinessControl, FundingType, RequestCategory
    from datetime import datetime, timedelta, UTC
 
-   chain = AuditChain(deployer_id="acme-health-prod")          # hardened genesis
+   chain = AuditChain(deployer_id="acme-health-prod")  # hardened genesis
    received = datetime(2026, 6, 1, 8, 0, tzinfo=UTC)
    result = UMTimelinessControl(chain).check(
        funding_type=FundingType.MEDICARE_ADVANTAGE,
-       category=RequestCategory.EXPEDITED_URGENT,              # CMS-0057-F 72h
+       category=RequestCategory.EXPEDITED_URGENT,  # CMS-0057-F 72h
        request_received_at=received,
-       decision_made_at=received + timedelta(hours=80),        # 80h > 72h
+       decision_made_at=received + timedelta(hours=80),  # 80h > 72h
        case_ref="PA-12345",
    )
-   assert result.met is False                                  # breach, recorded to the chain
+   assert result.met is False  # breach, recorded to the chain
    assert chain.verify()
    ```
 
@@ -81,7 +81,7 @@ Runnable end-to-end: [`examples/quickstart_um_timeliness.py`](examples/quickstar
 
 ## Why this exists for frontier autonomy stacks
 
-The controls in this library are **domain-agnostic**. The DEFCON state machine, the non-overridable **sovereign veto** (a separate-process control the agent cannot switch off), the **hash-chain audit ledger** (it detects tampering within its trust boundary), the **hard envelopes with mechanical escalation**, the **sampled-review tripwires**, and **monitor-led promotion** were forged in real multi-agent production systems under consequence — and they apply directly to any high-stakes coordinated autonomy (vehicles, robots, agent swarms) where *invisible promotion* or *cascade failure* is unacceptable. The decision class is a parameter: this repo encodes it for **health-insurance payer — utilization management, prior auth, appeals**, but the same A0→A4 deployment-authority structure lifts into any decision class without inheriting financial-services assumptions.
+The controls in this library are **domain-agnostic**. The DEFCON state machine, the non-overridable **sovereign veto** (a separate-process control the agent cannot switch off), the **hash-chain audit ledger** (it detects tampering within its trust boundary), the **hard envelopes with mechanical escalation**, the **sampled-review tripwires**, and **monitor-led promotion** were developed in my own multi-agent research systems — and they apply directly to any high-stakes coordinated autonomy (vehicles, robots, agent swarms) where *invisible promotion* or *cascade failure* is unacceptable. The decision class is a parameter: this repo encodes it for **health-insurance payer — utilization management, prior auth, appeals**, but the same A0→A4 deployment-authority structure lifts into any decision class without inheriting financial-services assumptions.
 
 - **Framework + whitepaper:** [autonomy-ladder.io](https://autonomy-ladder.io)
 - **Non-financial demo (under 60s):** [`finserv-agent-audit/examples/agent_coordination`](https://github.com/linus10x/finserv-agent-audit/tree/main/examples/agent_coordination) — the same veto / envelope / audit-chain / demotion primitives on a generic agent swarm.
