@@ -3,7 +3,7 @@
 **The audit record for a UM, prior-auth, or claims/appeals decision when an AI agent touches it — not the medical-necessity call.**
 
 [![CI](https://github.com/linus10x/payer-agent-audit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/linus10x/payer-agent-audit/actions/workflows/ci.yml)
-![coverage 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)
+![coverage 95%](https://img.shields.io/badge/coverage-95%25-brightgreen)
 ![tests 156](https://img.shields.io/badge/tests-156-brightgreen)
 ![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
 ![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)
@@ -20,7 +20,7 @@
 
 Most governance tooling ships a dashboard and a compliance checkbox. This ships a hash-chain evidence ledger, an adversarial probe per primitive, and a written list of the things it deliberately does **not** do. Five domain-agnostic governance primitives (level-gate · sovereign veto · hash-chain ledger · DEFCON · effective-challenge harness) carry three health-payer controls (UM timeliness · clinician-of-record · appeal/IRO) on top. Funding-type-aware: the same denial routes to CMS-0057-F, ERISA, or a state DOI clock depending on who funds the plan.
 
-**156 tests · 100% coverage · 14/14 mutation kill · 5 AL-PROBES · golden corpus of real public matters (Lokken v. UnitedHealth, Kisting-Leung v. Cigna) · mypy --strict · py.typed · zero runtime deps · 4 SHA-pinned security workflows.**
+**156 tests · 95% coverage (100% of the library package) · 14/14 mutation kill · 5 AL-PROBES · golden corpus of real public matters (Lokken v. UnitedHealth, Kisting-Leung v. Cigna) · mypy --strict · py.typed · zero runtime deps · 4 SHA-pinned security workflows.**
 
 ## Read me first
 
@@ -86,7 +86,7 @@ The controls in this library are **domain-agnostic**. The DEFCON state machine, 
 - **Framework + whitepaper:** [autonomy-ladder.io](https://autonomy-ladder.io)
 - **Non-financial demo (under 60s):** [`finserv-agent-audit/examples/agent_coordination`](https://github.com/linus10x/finserv-agent-audit/tree/main/examples/agent_coordination) — the same veto / envelope / audit-chain / demotion primitives on a generic agent swarm.
 
-> **For reviewers & safety teams:** every control here is falsifiable — the test suite (156 tests · 100% coverage · 14/14 mutation kill) turns each rule into a runnable check, and the veto and ledger are infrastructure with operational properties (separate process boundary, distinct credentials, a gate the agent cannot reach; write-once retention). These are reference implementations for adoption, not deployed production controls.
+> **For reviewers & safety teams:** every control here is falsifiable — the test suite (156 tests · 95% coverage · 14/14 mutation kill) turns each rule into a runnable check, and the veto and ledger are infrastructure with operational properties (separate process boundary, distinct credentials, a gate the agent cannot reach; write-once retention). These are reference implementations for adoption, not deployed production controls.
 
 
 ## Part of the Autonomy Ladder™ family
@@ -229,7 +229,7 @@ pytest --cov=src/payer_agent_audit --cov-fail-under=90      # unit + property + 
 python3 scripts/mutation_check.py                            # mutation pass (kill score)
 ```
 
-The suite includes unit + contract tests, property-based tests (thousands of generated cases per primitive), a golden corpus of public matters of record (each with a primary-source URL — including *Estate of Gene B. Lokken v. UnitedHealth Group* and *Kisting-Leung v. Cigna*), the five AL-PROBES under `tests/adversarial/`, and a payer-not-FDA-SaMD boundary scan. The gate is **≥90%**; the suite currently runs at **156 tests, 100% line coverage, and a 14/14 (100%) mutation kill** — coverage is a floor, not a finish line (see [docs/ASSURANCE-CATALOG.md](docs/ASSURANCE-CATALOG.md)). The same checks run in CI on every push (badge above is live, not self-asserted).
+The suite includes unit + contract tests, property-based tests (thousands of generated cases per primitive), a golden corpus of public matters of record (each with a primary-source URL — including *Estate of Gene B. Lokken v. UnitedHealth Group* and *Kisting-Leung v. Cigna*), the five AL-PROBES under `tests/adversarial/`, and a payer-not-FDA-SaMD boundary scan. The gate is **≥90%**; the suite currently runs at **156 tests, 95% line coverage (100% of `src/payer_agent_audit`), and a 14/14 (100%) mutation kill** — coverage is a floor, not a finish line (see [docs/ASSURANCE-CATALOG.md](docs/ASSURANCE-CATALOG.md)). Tests and coverage run in CI on every push. The mutation check runs with `scripts/mutation_check.py`.
 
 ## Who this is for
 
