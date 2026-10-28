@@ -41,7 +41,7 @@ from payer_agent_audit.schemas import (
     AutonomyLevel,
 )
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 __all__ = [
     "AppealIROControl",
