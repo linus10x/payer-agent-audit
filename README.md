@@ -243,7 +243,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the trust-boundary diagram — the fi
 
 ## Author & disclosures
 
-Authored by Kunjar Bhaduri through North Texas Capital Investments, an independent research effort. This is independent research; it is not produced on behalf of, and does not represent the views of, any employer or client, and contains no employer- or client-confidential material. The regulatory content is reference mapping, not legal advice — see [DISCLAIMER.md](DISCLAIMER.md).
+Authored by Kunjar Bhaduri, an independent research effort. This is independent research; it is not produced on behalf of, and does not represent the views of, any employer or client, and contains no employer- or client-confidential material. The regulatory content is reference mapping, not legal advice — see [DISCLAIMER.md](DISCLAIMER.md).
 
 ## License · Citation
 
